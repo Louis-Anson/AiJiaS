@@ -4,13 +4,13 @@
   <defs>
     <!-- Beautiful Warm Cozy Gradient: Soft Peach Cream to Warm Latte -->
     <linearGradient id="warmBg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fffbf7"/>
-      <stop offset="60%" stop-color="#fcf5ed"/>
-      <stop offset="100%" stop-color="#faeee3"/>
+      <stop offset="0%" stop-color="#fffbfc"/>
+      <stop offset="60%" stop-color="#faf2ea"/>
+      <stop offset="100%" stop-color="#f6e6dc"/>
     </linearGradient>
     <linearGradient id="brainGlow" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fdfafd"/>
-      <stop offset="100%" stop-color="#f5effa"/>
+      <stop offset="0%" stop-color="#fffafd"/>
+      <stop offset="100%" stop-color="#f5eefa"/>
     </linearGradient>
     <!-- Soft, puffy shadows for a gentle, warm feeling -->
     <filter id="cozyShadow" x="-10%" y="-10%" width="120%" height="120%">
@@ -58,31 +58,31 @@
 
     <!-- WeCom -->
     <rect x="200" y="22" width="280" height="70" rx="16" fill="#fff5f5" stroke="#fecdd3" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="240" y="49" class="box-label">企业微信 / 微信</text>
-    <text x="240" y="69" class="box-desc">发送日常闲话、待办与记账指令</text>
+    <text x="225" y="49" class="box-label">💬 企业微信 / 微信</text>
+    <text x="225" y="69" class="box-desc">发送日常闲话、待办与记账指令</text>
 
     <!-- Mini Program -->
     <rect x="660" y="22" width="280" height="70" rx="16" fill="#fff5f5" stroke="#fecdd3" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="700" y="49" class="box-label">微信小程序</text>
-    <text x="700" y="69" class="box-desc">直观的列表看板、数据卡片展示</text>
+    <text x="685" y="49" class="box-label">📱 微信小程序</text>
+    <text x="685" y="69" class="box-desc">直观的列表看板、数据卡片展示</text>
 
     <!-- Web Portal -->
     <rect x="1120" y="22" width="280" height="70" rx="16" fill="#fff5f5" stroke="#fecdd3" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="1160" y="49" class="box-label">网页端管理后台</text>
-    <text x="1160" y="69" class="box-desc">家庭复杂设置与长期图表盘点</text>
+    <text x="1145" y="49" class="box-label">🖥️ 网页端管理后台</text>
+    <text x="1145" y="69" class="box-desc">家庭复杂设置与长期图表盘点</text>
   </g>
 
   <!-- ==================== LAYER 1.5: THE WALL ==================== -->
   <g transform="translate(0, 315)">
     <!-- Traefik -->
-    <rect x="420" y="0" width="260" height="80" rx="16" fill="#fdfcf7" stroke="#ebdccb" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="460" y="34" class="box-label">Traefik 反向代理</text>
-    <text x="460" y="56" class="box-desc">TLS 防护，只转发至安全网关</text>
+    <rect x="420" y="0" width="260" height="80" rx="18" fill="#fdfcf7" stroke="#ebdccb" stroke-width="1.5" filter="url(#cozyShadow)"/>
+    <text x="445" y="34" class="box-label">🔒 Traefik 反向代理</text>
+    <text x="445" y="56" class="box-desc">网络出口与安全 TLS 加密防护</text>
 
     <!-- Safe Gateway -->
-    <rect x="920" y="0" width="260" height="80" rx="16" fill="#fffbeb" stroke="#fed7aa" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="960" y="34" class="box-label">AI Assistant Gateway</text>
-    <text x="960" y="56" class="box-desc">企业微信鉴权与高危操作二次确认</text>
+    <rect x="920" y="0" width="260" height="80" rx="18" fill="#fffbeb" stroke="#fed7aa" stroke-width="1.5" filter="url(#cozyShadow)"/>
+    <text x="945" y="34" class="box-label">🛡️ AI Assistant Gateway</text>
+    <text x="945" y="56" class="box-desc">成员身份识别与敏感操作安全确认</text>
   </g>
 
   <!-- ==================== LAYER 2: SYSTEM BRAIN & SKILL ==================== -->
@@ -91,32 +91,32 @@
     <text x="25" y="-12" class="layer-title">家庭 AI 核心 · 思考与进化的温室</text>
 
     <!-- Hermes Agent -->
-    <rect x="50" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#c084fc" stroke-width="2.2" filter="url(#cozyShadow)"/>
-    <text x="90" y="70" class="box-label">Hermes AI 主脑</text>
-    <text x="90" y="95" class="box-desc">主导对话，维护上下文与历史</text>
-    <text x="90" y="118" class="box-desc">理解家的偏好、习惯与温暖瞬间</text>
-    <text x="90" y="142" class="box-desc" fill="#7c3aed" style="font-weight: 700;">🌱 核心 AI 管家 (记忆/理解/微代理)</text>
+    <rect x="50" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#c084fc" stroke-width="2" filter="url(#cozyShadow)"/>
+    <text x="80" y="68" class="box-label">🧠 Hermes AI 管家 (主脑)</text>
+    <text x="80" y="93" class="box-desc">主导日常对话，维护长期记忆与上下文</text>
+    <text x="80" y="115" class="box-desc">理解家的偏好、习惯与温暖默契</text>
+    <text x="80" y="138" class="box-desc" fill="#9333ea" style="font-weight: 700;">🌱 核心大脑：理解指令 -> 规划技能</text>
 
     <!-- Skill Registry -->
-    <rect x="550" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#fcd34d" stroke-width="2.2" filter="url(#cozyShadow)"/>
-    <text x="590" y="70" class="box-label">家庭技能登记册 (Skills)</text>
-    <text x="590" y="95" class="box-desc">定义财务、物资、门锁的安全调用红线</text>
-    <text x="590" y="118" class="box-desc">将不确定的大模型动作规范化</text>
-    <text x="590" y="142" class="box-desc" fill="#d97706" style="font-weight: 700;">🧩 限制模型直接干预数据</text>
+    <rect x="550" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#fbbf24" stroke-width="2" filter="url(#cozyShadow)"/>
+    <text x="580" y="68" class="box-label">🧩 家庭技能登记册 (Skills)</text>
+    <text x="580" y="93" class="box-desc">注册合法操作、入参 Schema 与确认策略</text>
+    <text x="580" y="115" class="box-desc">避免大模型直接碰触核心财务和设备</text>
+    <text x="580" y="138" class="box-desc" fill="#d97706" style="font-weight: 700;">⚖️ 安全红线：限制模型随意扩权</text>
 
     <!-- LiteLLM Routing -->
-    <rect x="1050" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#38bdf8" stroke-width="2.2" filter="url(#cozyShadow)"/>
-    <text x="1090" y="70" class="box-label">LiteLLM 动态中继</text>
-    <text x="1090" y="95" class="box-desc">统一调度 GPT, Claude, Gemini</text>
-    <text x="1090" y="118" class="box-desc">DeepSeek, Qwen 等不同性价比大脑</text>
-    <text x="1090" y="142" class="box-desc" fill="#0284c7" style="font-weight: 700;">⚡ 动态按需分配脑力</text>
+    <rect x="1050" y="35" width="340" height="140" rx="18" fill="#ffffff" stroke="#38bdf8" stroke-width="2" filter="url(#cozyShadow)"/>
+    <text x="1080" y="68" class="box-label">⚡ LiteLLM 动态中继</text>
+    <text x="1080" y="93" class="box-desc">统一封装、调度外部与本地大脑</text>
+    <text x="1080" y="115" class="box-desc">低成本日常对话模型 + 深度逻辑推理模型</text>
+    <text x="1080" y="138" class="box-desc" fill="#0284c7" style="font-weight: 700;">🔮 模型路由与高并发请求缓存</text>
   </g>
 
   <!-- ==================== LAYER 3: TRANSLATOR ==================== -->
   <g transform="translate(0, 700)">
-    <rect x="580" y="0" width="440" height="65" rx="16" fill="#fffaf5" stroke="#fcd34d" stroke-width="1.5" filter="url(#cozyShadow)"/>
-    <text x="615" y="28" class="box-label">家庭服务翻译官 (Service Adapter)</text>
-    <text x="615" y="48" class="box-desc">把复杂的 Docker 服务端 API 整理成 AI 听得懂的安全格式</text>
+    <rect x="580" y="0" width="440" height="65" rx="16" fill="#fffaf5" stroke="#fbcfe8" stroke-width="1.5" filter="url(#cozyShadow)"/>
+    <text x="615" y="28" class="box-label">🔌 家庭系统适配器 (Service Adapter)</text>
+    <text x="615" y="48" class="box-desc">把不同 Docker 系统的 API 统一翻译成 AI 听得懂的底层工具</text>
   </g>
 
   <!-- ==================== LAYER 4: SERVICES (The Servants) ==================== -->
@@ -126,38 +126,38 @@
 
     <!-- Donetick -->
     <rect x="40" y="24" width="170" height="75" rx="16" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="65" y="50" class="box-label">家务与任务</text>
-    <text x="65" y="72" class="box-desc">Donetick 计划</text>
+    <text x="65" y="50" class="box-label">📅 家务与任务</text>
+    <text x="65" y="72" class="box-desc">Donetick 计划机</text>
 
     <!-- Grocy -->
     <rect x="235" y="24" width="170" height="75" rx="16" fill="#ecfeff" stroke="#a5f3fc" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="260" y="50" class="box-label">物资与冰箱</text>
-    <text x="260" y="72" class="box-desc">Grocy 食材管理</text>
+    <text x="260" y="50" class="box-label">🥦 物资与冰箱</text>
+    <text x="260" y="72" class="box-desc">Grocy 自动库存</text>
 
     <!-- Bookkeeping -->
     <rect x="430" y="24" width="170" height="75" rx="16" fill="#fffbeb" stroke="#fde68a" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="455" y="50" class="box-label">温馨记账</text>
+    <text x="455" y="50" class="box-label">💰 温馨家庭账本</text>
     <text x="455" y="72" class="box-desc">ezBookkeeping</text>
 
     <!-- Assets -->
-    <rect x="625" y="24" width="170" height="75" rx="16" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="650" y="50" class="box-label">衣物物品</text>
-    <text x="650" y="72" class="box-desc">Homebox 归类</text>
+    <rect x="625" y="24" width="170" height="75" rx="16" fill="#fff5f5" stroke="#fbcfe8" stroke-width="1.2" filter="url(#cozyShadow)"/>
+    <text x="650" y="50" class="box-label">👕 物品衣物整理</text>
+    <text x="650" y="72" class="box-desc">Homebox 空间归档</text>
 
     <!-- Media -->
-    <rect x="820" y="24" width="170" height="75" rx="16" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="845" y="50" class="box-label">回忆与音乐</text>
+    <rect x="820" y="24" width="170" height="75" rx="16" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.2" filter="url(#cozyShadow)"/>
+    <text x="845" y="50" class="box-label">🖼️ 独属于家的回忆</text>
     <text x="845" y="72" class="box-desc">Immich / Nav</text>
 
     <!-- Health -->
-    <rect x="1015" y="24" width="170" height="75" rx="16" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="1040" y="50" class="box-label">经期与关怀</text>
-    <text x="1040" y="72" class="box-desc">女性健康记录库</text>
+    <rect x="1015" y="24" width="170" height="75" rx="16" fill="#fff1f2" stroke="#fda4af" stroke-width="1.2" filter="url(#cozyShadow)"/>
+    <text x="1040" y="50" class="box-label">❤️ 身体节律经期</text>
+    <text x="1040" y="72" class="box-desc">女性健康关怀时间线</text>
 
     <!-- HA -->
-    <rect x="1210" y="24" width="190" height="75" rx="16" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="1235" y="50" class="box-label">智能家居 HA</text>
-    <text x="1235" y="72" class="box-desc">虚拟机中枢 (灯与温度)</text>
+    <rect x="1210" y="24" width="190" height="75" rx="16" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.2" filter="url(#cozyShadow)"/>
+    <text x="1235" y="50" class="box-label">🏡 智能家居 HA</text>
+    <text x="1235" y="72" class="box-desc">虚拟机中枢 (灯与门锁)</text>
   </g>
 
   <!-- ==================== LAYER 5: STORAGE & DATA EVOLUTION ==================== -->
@@ -167,58 +167,58 @@
     <text x="290" y="32" class="box-label">💾 PostgreSQL 家庭长效记忆数据库</text>
 
     <!-- Personal model prediction -->
-    <rect x="850" y="0" width="340" height="52" rx="15" fill="#fdf4ff" stroke="#f5d0fe" stroke-width="1.2" filter="url(#cozyShadow)"/>
-    <text x="890" y="32" class="box-label">🔮 积累足够长效数据后的统计学预测模型</text>
+    <rect x="840" y="0" width="460" height="52" rx="15" fill="#fff1f2" stroke="#fbcfe8" stroke-width="1.2" filter="url(#cozyShadow)"/>
+    <text x="865" y="32" class="box-label">🔮 长期数据积累后的身体节律预测模型</text>
   </g>
 
   <!-- ==================== FLOWS & CONNECTIONS (Zero messy crossing) ==================== -->
 
-  <!-- 1. From touchpoints horizontally converging, going straight down through Traefik -->
-  <path class="bus-line" d="M340 230 L340 250 L800 250 L800 230"/>
-  <path class="bus-line" d="M1260 230 L1260 250 L800 250"/>
-  <!-- Down to Traefik -->
-  <path class="flow-line" d="M550 250 L550 315"/>
-  <!-- Down to Secure Gateway -->
-  <path class="flow-line" d="M1050 250 L1050 315"/>
+  <!-- 1. From touchpoints converging and going down to Traefik -->
+  <path class="flow-line" d="M340 252 L340 285 L550 285 L550 315"/>
+  <path class="bus-line" d="M800 252 L800 285 L550 285"/>
+  <path class="bus-line" d="M1260 252 L1260 285 L550 285"/>
 
-  <!-- From Gateway & Traefik safely converging, entering the Agent Core -->
-  <path class="bus-line" d="M550 395 L550 415 L1050 415 L1050 395"/>
-  <path class="flow-line" d="M800 415 L800 445"/> <!-- Enters AI Cognitive Layer -->
+  <!-- 2. From Traefik to AI Assistant Gateway -->
+  <path class="flow-line" d="M680 355 L920 355"/>
 
-  <!-- Inside Brain Complex (Neat horizontal exchanges) -->
+  <!-- 3. From Gateway to Hermes -->
+  <path class="flow-line" d="M1050 395 L1050 422 L300 422 L300 480"/>
+
+  <!-- 4. Inside Brain Complex (Neat horizontal exchanges) -->
   <!-- Hermes <-> Skill Registry -->
-  <path class="flow-dashed" d="M470 515 L630 515"/>
-  <path class="flow-dashed" d="M630 550 L470 550"/>
-  <!-- Hermes -> LiteLLM -->
-  <path class="flow-line" d="M470 480 C700 440 900 440 1130 480"/>
+  <path class="flow-dashed" d="M470 520 L630 520"/>
+  <path class="flow-dashed" d="M630 555 L470 555"/>
+  <!-- Hermes to LiteLLM (Beautiful non-intersecting curve in empty corridor above Skill Registry) -->
+  <path class="flow-line" d="M470 500 C600 460 1000 460 1130 500"/>
 
-  <!-- From Skills Registry down to Service Translator -->
-  <path class="flow-line" d="M800 585 L800 700"/>
+  <!-- 5. From Skills Registry down to Service Translator -->
+  <path class="flow-line" d="M800 620 L800 700"/>
 
-  <!-- FROM ADAPTER DOWN TO SERVICES BUS (Horizontal elegant single-bus layout) -->
-  <path class="flow-line" d="M800 765 L800 790"/> <!-- Drop down to horizontal bus -->
-  <path class="bus-line" d="M205 790 L1395 790"/> <!-- Horizontal distribution bus -->
+  <!-- 6. FROM ADAPTER DOWN TO SERVICES BUS (Horizontal elegant single-bus layout) -->
+  <path class="flow-line" d="M800 765 L800 822"/> <!-- Drop down to horizontal bus -->
+  <path class="bus-line" d="M205 822 L1385 822"/> <!-- Horizontal distribution bus inside the CAPABILITIES border gap -->
 
   <!-- Dropping vertical, straight perpendicular lines down to individual services -->
-  <path class="flow-line" d="M205 790 L205 834"/>
-  <path class="flow-line" d="M400 790 L400 834"/>
-  <path class="flow-line" d="M595 790 L595 834"/>
-  <path class="flow-line" d="M790 790 L790 834"/>
-  <path class="flow-line" d="M985 790 L985 834"/>
-  <path class="flow-line" d="M1180 790 L1180 834"/>
-  <path class="flow-line" d="M1375 790 L1375 834"/>
+  <path class="flow-line" d="M205 822 L205 834"/> <!-- Donetick -->
+  <path class="flow-line" d="M400 822 L400 834"/> <!-- Grocy -->
+  <path class="flow-line" d="M595 822 L595 834"/> <!-- ezBookkeeping -->
+  <path class="flow-line" d="M790 822 L790 834"/> <!-- Homebox -->
+  <path class="flow-line" d="M985 822 L985 834"/> <!-- Immich -->
+  <path class="flow-line" d="M1180 822 L1180 834"/> <!-- Health -->
+  <path class="flow-line" d="M1385 822 L1385 834"/> <!-- HA -->
 
-  <!-- Saving telemetry and logs to Database & Future Prediction -->
-  <!-- Low risk silent lines pointing to PostgreSQL -->
-  <path class="flow-dashed" d="M595 910 L595 975"/> <!-- Bookkeeping db save -->
-  <path class="flow-dashed" d="M1180 910 C1180 1000 1100 1000 1100 975"/> <!-- Health telemetry db save -->
+  <!-- 7. Bottom DB writes (In the corridors, zero box crossing) -->
+  <!-- Books writes to PostgreSQL -->
+  <path class="flow-dashed" d="M595 909 L595 940 L500 940 L500 975"/>
+  <!-- Health writes to Predictor -->
+  <path class="flow-dashed" d="M1180 909 L1180 940 L1100 940 L1100 975"/>
 
-  <!-- From Database to Predictor -->
-  <path class="flow-dashed" d="M590 1001 L850 1001"/>
+  <!-- 8. From PostgreSQL (right boundary 670) to Predictor (left boundary 920) -->
+  <path class="flow-dashed" d="M670 1001 L920 1001"/>
 
-  <!-- The Evolutionary Loop back to Skills Registry (Offline logs analysis) -->
-  <!-- Placed highly elegant, routing from the bottom base around to the skills registry -->
-  <path class="flow-dashed" d="M1020 975 C1200 910 1480 910 1480 680 C1480 500 1200 500 890 500"/>
+  <!-- 9. Evolutionary Loop back to Skills Registry (Offline logs analysis) -->
+  <!-- Sweeps from Predictor right side (x=1380, center-y=1001) around right margin (outer bounds) to Skill Registry right edge (x=970, y=550) -->
+  <path class="flow-dashed" d="M1380 1001 C1540 1001 1540 550 970 550"/>
 
   <!-- Footnote -->
   <g transform="translate(80, 1055)">
