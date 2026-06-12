@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  # ==================== 女性健康预测服务 ====================
+  period-predictor:
+    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
+    container_name: period-predictor
+    restart: unless-stopped
+    profiles:
+      - health
+    environment:
+      - TZ=Asia/Shanghai
+      - PORT=5000
+      - POSTGRES_DSN=postgresql://${DB_USER}:${DB_PASSWORD}@pgbouncer:5432/${AIJIAS_DB_NAME}
+      - MODEL_DIR=/models
+      - RULESET_DIR=/rules
+    volumes:
+      - ../ai-models/period-predictor/models:/models
+      - ../ai-models/period-predictor/rules:/rules:ro
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  aijias-internal:
+    external: true

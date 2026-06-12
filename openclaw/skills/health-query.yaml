@@ -1,5 +1,0 @@
-name: "健康查询"
-trigger_keywords: ["经期", "生理期", "预测", "养生茶"]
-api_endpoint: "http://period-predictor:5000/predict"
-method: POST
-description: "查询经期预测结果，并可触发养生茶饮提醒任务。"

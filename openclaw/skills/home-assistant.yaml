@@ -1,8 +1,0 @@
-name: "Home Assistant"
-trigger_keywords: ["空调", "灯光", "门锁", "温度", "洗衣机", "扫地"]
-api_endpoint: "http://haos-vm-ip:8123/api"   # 替换为 HAOS 虚拟机实际 IP
-method: POST
-auth:
-  type: token
-  token: ${HA_LONG_LIVED_ACCESS_TOKEN}
-description: "控制所有智能家居设备，查询传感器状态。"

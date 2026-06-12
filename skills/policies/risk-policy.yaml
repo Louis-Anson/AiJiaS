@@ -1,0 +1,35 @@
+version: 1
+name: aijias-family-risk-policy
+
+risk_levels:
+  low:
+    confirmation_required: false
+    examples:
+      - read_inventory
+      - list_tasks
+      - summarize_photos
+  medium:
+    confirmation_required: true
+    examples:
+      - create_task
+      - create_expense
+      - update_inventory
+  high:
+    confirmation_required: true
+    require_explicit_family_member: true
+    require_audit_log: true
+    examples:
+      - unlock_door
+      - delete_records
+      - batch_update_expenses
+      - health_risk_alert
+
+hard_rules:
+  - id: no_direct_database_write
+    description: LLM 不允许直接写 PostgreSQL 或子系统数据库。
+  - id: no_silent_money_action
+    description: 记账金额、付款人或分类低置信度时必须二次确认。
+  - id: no_medical_diagnosis
+    description: 健康技能只能做记录、提醒和解释，不能输出诊断或治疗结论。
+  - id: no_high_risk_auto_publish
+    description: Skill Miner 生成的高风险技能不得自动上线。

@@ -1,8 +1,0 @@
-name: "食物管理"
-trigger_keywords: ["库存", "还有什么吃的", "过期", "冰箱", "菜谱"]
-api_endpoint: "http://grocy:80/api"
-method: POST
-auth:
-  type: api_key
-  key: ${GROCY_API_KEY}
-description: "查询食物库存、临期提醒，并联动菜谱系统推荐菜肴。"

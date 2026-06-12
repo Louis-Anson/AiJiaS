@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.9"
 
 services:
   # ==================== 音乐下载与搜刮 ====================
@@ -6,11 +6,6 @@ services:
     image: guohuiyuan/go-music-dl:latest
     container_name: go-music-dl
     restart: unless-stopped
-    volumes:
-      - music_data:/app/downloads
-      - /docker/go-music-dl/config:/app/config
-    environment:
-      - TZ=Asia/Shanghai
     command:
       - "./music-dl"
       - "web"
@@ -20,25 +15,21 @@ services:
       - "--vg-audio"
       - "--vg-lyric"
       - "--vg-export"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - music_data:/app/downloads
+      - /docker/go-music-dl/config:/app/config
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.go-music-dl.rule=Host(`music-dl.relax.mycloudnas.com`)"
-      - "traefik.http.routers.go-music-dl.entrypoints=websecure"
-      - "traefik.http.routers.go-music-dl.tls.certresolver=letsencrypt"
-      - "traefik.http.services.go-music-dl.loadbalancer.server.port=8080"
+      - "traefik.enable=false"
 
   # ==================== 小说下载与搜刮 ====================
   go-novel-dl:
     image: guohuiyuan/go-novel-dl:latest
     container_name: go-novel-dl
     restart: unless-stopped
-    volumes:
-      - novel_data:/app/downloads
-      - /docker/go-novel-dl/config:/app/config
-    environment:
-      - TZ=Asia/Shanghai
     command:
       - "./novel-dl"
       - "web"
@@ -46,62 +37,99 @@ services:
       - "--no-browser"
       - "--export-txt"
       - "--export-epub"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - novel_data:/app/downloads
+      - /docker/go-novel-dl/config:/app/config
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.go-novel-dl.rule=Host(`novel-dl.relax.mycloudnas.com`)"
-      - "traefik.http.routers.go-novel-dl.entrypoints=websecure"
-      - "traefik.http.routers.go-novel-dl.tls.certresolver=letsencrypt"
-      - "traefik.http.services.go-novel-dl.loadbalancer.server.port=8080"
+      - "traefik.enable=false"
 
   # ==================== 私人音乐服务器 ====================
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
     restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
     volumes:
       - /docker/navidrome/data:/data
       - music_data:/music:ro
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
+
+  # ==================== 照片备份与管理：Immich 官方组合 ====================
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: immich-server
+    restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
+      - DB_HOSTNAME=immich-postgres
+      - DB_USERNAME=${IMMICH_DB_USER}
+      - DB_PASSWORD=${IMMICH_DB_PASSWORD}
+      - DB_DATABASE_NAME=${IMMICH_DB_NAME}
+      - REDIS_HOSTNAME=immich-redis
+      - IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003
+    volumes:
+      - /docker/immich/upload:/data
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - immich-redis
+      - immich-postgres
+      - immich-machine-learning
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.navidrome.rule=Host(`music.relax.mycloudnas.com`)"
-      - "traefik.http.routers.navidrome.entrypoints=websecure"
-      - "traefik.http.routers.navidrome.tls.certresolver=letsencrypt"
-      - "traefik.http.services.navidrome.loadbalancer.server.port=4533"
+      - "traefik.enable=false"
 
-  # ==================== 照片备份与管理 ====================
-  immich:
-    image: ghcr.io/immich-app/immich-server:release
-    container_name: immich
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: immich-machine-learning
     restart: unless-stopped
     volumes:
-      - /docker/immich/upload:/usr/src/app/upload
-      - /etc/localtime:/etc/localtime:ro
-    environment:
-      - DB_HOSTNAME=postgres
-      - DB_USERNAME=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE_NAME=immich
-      - JWT_SECRET=${IMMICH_JWT_SECRET}
-      - TZ=Asia/Shanghai
+      - immich_model_cache:/cache
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.immich.rule=Host(`photo.relax.mycloudnas.com`)"
-      - "traefik.http.routers.immich.entrypoints=websecure"
-      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
-      - "traefik.http.services.immich.loadbalancer.server.port=3000"
+      - "traefik.enable=false"
+
+  immich-redis:
+    image: redis:latest
+    container_name: immich-redis
+    restart: unless-stopped
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
+
+  immich-postgres:
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    container_name: immich-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${IMMICH_DB_USER}
+      - POSTGRES_PASSWORD=${IMMICH_DB_PASSWORD}
+      - POSTGRES_DB=${IMMICH_DB_NAME}
+      - POSTGRES_INITDB_ARGS=--data-checksums
+    volumes:
+      - /docker/immich/postgres:/var/lib/postgresql/data
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   music_data:
   novel_data:
+  immich_model_cache:
 
 networks:
-  traefik-public:
+  aijias-internal:
     external: true

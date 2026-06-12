@@ -1,8 +1,0 @@
-name: "记账"
-trigger_keywords: ["花了", "收入", "记账", "买"]
-api_endpoint: "http://ezbookkeeping:8080/api"
-method: POST
-auth:
-  type: token
-  token: ${EZBOOKKEEPING_TOKEN}
-description: "解析金额和类别，调用记账 API 自动创建账单。"

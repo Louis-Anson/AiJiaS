@@ -1,0 +1,39 @@
+model_list:
+  - model_name: daily_zh
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  - model_name: tool_strict
+    litellm_params:
+      model: qwen/qwen-plus
+      api_key: os.environ/DASHSCOPE_API_KEY
+
+  - model_name: planner
+    litellm_params:
+      model: claude-3-5-sonnet-latest
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: deep_reasoner
+    litellm_params:
+      model: gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: skill_evolver
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+router_settings:
+  redis_host: redis
+  redis_port: 6379
+
+litellm_settings:
+  cache: true
+  cache_params:
+    type: redis
+    host: redis
+    port: 6379

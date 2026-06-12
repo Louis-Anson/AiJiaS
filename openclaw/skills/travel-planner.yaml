@@ -1,8 +1,0 @@
-name: "旅行规划"
-trigger_keywords: ["旅行", "行程", "目的地", "打包清单"]
-api_endpoint: "http://trek:3000/api"
-method: POST
-auth:
-  type: token
-  token: ${TREK_API_TOKEN}
-description: "管理家庭旅行计划，包括行程、预算和打包清单。"

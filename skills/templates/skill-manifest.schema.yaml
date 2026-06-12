@@ -1,0 +1,27 @@
+id: example.skill_id
+name: 示例技能
+version: 0.1.0
+status: draft
+owner: family
+risk_level: low
+service_adapter:
+  service: example-service
+  action: example_action
+trigger_examples:
+  - 示例自然语言触发句
+input_schema:
+  type: object
+  required: []
+  properties: {}
+confirmation:
+  required: false
+  reason: low risk read-only action
+audit:
+  log_request: true
+  log_response: true
+  redact_fields: []
+tests:
+  - name: happy_path
+    input: {}
+    expect:
+      status: success

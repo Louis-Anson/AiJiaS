@@ -1,0 +1,46 @@
+id: smarthome.control_device
+name: 智能家居控制
+version: 1.0.0
+status: approved
+owner: family
+risk_level: high
+service_adapter:
+  service: home-assistant
+  action: call_service
+trigger_examples:
+  - 把客厅灯打开
+  - 空调调到 26 度
+  - 洗衣机结束后提醒我晾衣服
+input_schema:
+  type: object
+  required:
+    - domain
+    - service
+  properties:
+    domain:
+      type: string
+    service:
+      type: string
+    entity_id:
+      type: string
+    service_data:
+      type: object
+confirmation:
+  required: true
+  reason: 涉及设备控制；门锁、安防和大功率设备必须二次确认。
+audit:
+  log_request: true
+  log_response: true
+  redact_fields: []
+high_risk_entities:
+  - lock.*
+  - alarm_control_panel.*
+  - switch.high_power_*
+tests:
+  - name: turn_on_light
+    input:
+      domain: light
+      service: turn_on
+      entity_id: light.living_room
+    expect:
+      status: pending_confirmation

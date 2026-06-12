@@ -1,0 +1,7 @@
+sensor.xia_ci_jing_qi_yu_ce:
+  friendly_name: 下次经期预测
+  icon: mdi:calendar-heart
+
+input_datetime.last_period_start:
+  friendly_name: 上次经期开始日期
+  icon: mdi:calendar-start

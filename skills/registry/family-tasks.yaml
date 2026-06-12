@@ -1,0 +1,43 @@
+id: chores.create_or_update_task
+name: 家务任务
+version: 1.0.0
+status: approved
+owner: family
+risk_level: medium
+service_adapter:
+  service: donetick
+  action: create_or_update_task
+trigger_examples:
+  - 周六提醒我换床单
+  - 创建一个倒垃圾任务
+  - 每两周清洗一次洗衣机
+input_schema:
+  type: object
+  required:
+    - title
+  properties:
+    title:
+      type: string
+    assignee:
+      type: string
+    due_at:
+      type: string
+      format: date-time
+    recurrence:
+      type: string
+    notes:
+      type: string
+confirmation:
+  required: true
+  reason: 会创建或修改家庭任务，需确认执行对象和时间。
+audit:
+  log_request: true
+  log_response: true
+  redact_fields: []
+tests:
+  - name: recurring_chore
+    input:
+      title: 清洗洗衣机
+      recurrence: P14D
+    expect:
+      status: pending_confirmation

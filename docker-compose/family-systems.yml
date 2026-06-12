@@ -1,17 +1,19 @@
-version: '3.8'
+version: "3.9"
 
 services:
   # ==================== 家庭任务 ====================
   donetick:
-    image: donetick/donetick:latest
+    image: donetick/donetick:beta
     container_name: donetick
     restart: unless-stopped
-    volumes:
-      - /docker/donetick/data:/data
     environment:
       - TZ=Asia/Shanghai
+      - DT_ENV=selfhosted
+      - DT_SQLITE_PATH=/donetick-data/donetick.db
+    volumes:
+      - /docker/donetick/data:/donetick-data
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -20,31 +22,48 @@ services:
     image: linuxserver/grocy:latest
     container_name: grocy
     restart: unless-stopped
-    volumes:
-      - /docker/grocy/data:/config
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - TZ=Asia/Shanghai
+    volumes:
+      - /docker/grocy/config:/config
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
-  # ==================== 菜谱管理 ====================
+  # ==================== 菜谱管理：默认 Mealie，Tandoor 可选 ====================
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - ALLOW_SIGNUP=false
+      - BASE_URL=${MEALIE_BASE_URL}
+    volumes:
+      - /docker/mealie/data:/app/data
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
+
   tandoor:
     image: vabene1111/recipes:latest
     container_name: tandoor
     restart: unless-stopped
-    volumes:
-      - /docker/tandoor/static:/opt/recipes/staticfiles
-      - /docker/tandoor/media:/opt/recipes/mediafiles
+    profiles:
+      - recipes-advanced
     environment:
       - SECRET_KEY=${TANDOOR_SECRET}
       - DB_ENGINE=django.db.backends.sqlite3
       - TZ=Asia/Shanghai
+    volumes:
+      - /docker/tandoor/static:/opt/recipes/staticfiles
+      - /docker/tandoor/media:/opt/recipes/mediafiles
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -53,26 +72,12 @@ services:
     image: mayswind/ezbookkeeping:latest
     container_name: ezbookkeeping
     restart: unless-stopped
-    volumes:
-      - /docker/ezbookkeeping/data:/var/lib/ezbookkeeping
     environment:
       - TZ=Asia/Shanghai
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=false"
-
-  # ==================== 旅行规划 ====================
-  trek:
-    image: mauriceboe/trek:2.7.0
-    container_name: trek
-    restart: unless-stopped
     volumes:
-      - /docker/trek/data:/app/data
-    environment:
-      - JWT_SECRET=${TREK_JWT_SECRET}
+      - /docker/ezbookkeeping/data:/ezbookkeeping/data
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -81,22 +86,35 @@ services:
     image: sysadminsmedia/homebox:latest
     container_name: homebox
     restart: unless-stopped
-    volumes:
-      - /share/Container/homebox/data:/data
-      - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=Asia/Shanghai
       - HBOX_LOG_LEVEL=info
       - HBOX_ALLOW_REGISTRATION=false
+    volumes:
+      - /share/Container/homebox/data:/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
-      - traefik-public
+      - aijias-internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homebox.rule=Host(`homebox.aiJiaS.local`)"
-      - "traefik.http.routers.homebox.entrypoints=websecure"
-      - "traefik.http.routers.homebox.tls.certresolver=letsencrypt"
-      - "traefik.http.services.homebox.loadbalancer.server.port=7745"
+      - "traefik.enable=false"
+
+  # ==================== 旅行规划：非核心，可按需启用 ====================
+  trek:
+    image: mauriceboe/trek:2.7.0
+    container_name: trek
+    restart: unless-stopped
+    profiles:
+      - travel
+    environment:
+      - JWT_SECRET=${TREK_JWT_SECRET}
+      - TZ=Asia/Shanghai
+    volumes:
+      - /docker/trek/data:/app/data
+    networks:
+      - aijias-internal
+    labels:
+      - "traefik.enable=false"
 
 networks:
-  traefik-public:
+  aijias-internal:
     external: true

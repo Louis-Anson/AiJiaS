@@ -1,8 +1,0 @@
-name: "家庭任务"
-trigger_keywords: ["任务", "打扫", "买菜", "倒垃圾"]
-api_endpoint: "http://donetick:8080/api"
-method: POST
-auth:
-  type: api_key
-  key: ${DONETICK_API_KEY}
-description: "创建和管理家庭任务，自动拆解自然语言指令。"

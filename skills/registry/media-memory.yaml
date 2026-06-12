@@ -1,0 +1,42 @@
+id: media.search_and_play
+name: 回忆与音乐
+version: 1.0.0
+status: approved
+owner: family
+risk_level: low
+service_adapter:
+  service: media
+  action: search_and_play
+trigger_examples:
+  - 播放一点适合做饭的音乐
+  - 找一下去年夏天的照片
+  - 帮我搜这首歌有没有无损版
+input_schema:
+  type: object
+  required:
+    - query
+  properties:
+    query:
+      type: string
+    media_type:
+      type: string
+      enum:
+        - music
+        - photo
+        - novel
+    target_player:
+      type: string
+confirmation:
+  required: false
+  reason: 默认只查询和播放；下载、删除或公开分享由 adapter 升级风险等级。
+audit:
+  log_request: true
+  log_response: true
+  redact_fields: []
+tests:
+  - name: play_music
+    input:
+      query: 做饭时听的轻音乐
+      media_type: music
+    expect:
+      status: success

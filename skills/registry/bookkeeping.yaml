@@ -1,0 +1,51 @@
+id: finance.create_expense
+name: 家庭记账
+version: 1.0.0
+status: approved
+owner: family
+risk_level: medium
+service_adapter:
+  service: ezbookkeeping
+  action: create_expense
+trigger_examples:
+  - 今天买菜花了 36 块
+  - 帮我记一笔咖啡 18 元
+  - 老婆买药花了 82.5
+input_schema:
+  type: object
+  required:
+    - amount
+    - currency
+    - description
+  properties:
+    amount:
+      type: number
+      minimum: 0
+    currency:
+      type: string
+      default: CNY
+    description:
+      type: string
+    category:
+      type: string
+    payer:
+      type: string
+    occurred_at:
+      type: string
+      format: date-time
+confirmation:
+  required: true
+  reason: 涉及家庭账本写入；金额、付款人或分类不明确时必须确认。
+audit:
+  log_request: true
+  log_response: true
+  redact_fields: []
+tests:
+  - name: vegetable_expense
+    input:
+      amount: 36
+      currency: CNY
+      description: 买菜
+      category: grocery
+    expect:
+      status: pending_confirmation

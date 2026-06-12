@@ -2,6 +2,12 @@ homeassistant:
   name: 家
   latitude: 31.82
   longitude: 117.23
+  unit_system: metric
+  time_zone: Asia/Shanghai
+  country: CN
+  customize: !include customize.yaml
+
+default_config:
 
 http:
   use_x_forwarded_for: true
@@ -13,4 +19,4 @@ sensor: !include sensors.yaml
 automation: !include automations.yaml
 
 recorder:
-  db_url: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/ha
+  db_url: !secret recorder_db_url
