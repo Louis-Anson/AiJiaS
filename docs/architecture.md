@@ -65,6 +65,13 @@ flowchart TB
         WeComBot[企业微信推送<br/>自然语言摘要]
     end
 
+    subgraph FamilyCare[家庭关怀引擎]
+        direction LR
+        CareSignal[状态信号输入<br/>任务堆积 / 加班 / 睡眠 / 情绪 / 经期 / 疲惫]
+        BalanceEval[平衡评估<br/>减负 / 分担 / 安抚 / 延后 / 休息]
+        CareNotify[关怀提醒输出<br/>发给伴侣 / 自己 / 群聊]
+    end
+
     Devices[家庭设备<br/>空调 / 洗衣机 / 门锁 / 传感器]
 
     %% ===== Clean top-down flows =====
@@ -109,6 +116,15 @@ flowchart TB
     DB -.使用日志与纠错样本.-> Evolve
     Evolve -.候选技能草案.-> Skills
 
+    Hermes --> CareSignal
+    Health --> CareSignal
+    Tasks --> CareSignal
+    CareSignal --> BalanceEval
+    BalanceEval --> CareNotify
+    CareNotify --> Gateway
+    CareNotify --> Ntfy
+    CareNotify -.家庭关怀提示.-> WeComBot
+
     %% ===== Warm visual style =====
     classDef touch fill:#fff5f5,stroke:#fecdd3,color:#4a3728,stroke-width:1.4px
     classDef edge fill:#fffbeb,stroke:#fed7aa,color:#4a3728,stroke-width:1.6px
@@ -126,6 +142,7 @@ flowchart TB
     class Tasks,Food,Books,Assets,Media,Health,HA service
     class DB,Files,Predictor data
     class Ntfy,WeComBot notify
+    class CareSignal,BalanceEval,CareNotify notify
     class Devices device
 
     linkStyle default stroke:#d9c5b2,stroke-width:1.8px,color:#806b5c

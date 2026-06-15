@@ -19,6 +19,7 @@
 | AI调度中枢层 | AI 业务网关 | 统一承接微信/小程序请求，完成鉴权、路由、审计、权限控制和执行确认 | 未开发 | 高 | 自建 AI Assistant Gateway | NAS Docker | Hermes 不直接暴露公网；所有内部 API 调用通过 Gateway/Service Adapter 管控 |
 | AI调度中枢层 | AI 模型接口管理 | 统一管理 GPT、Claude、Gemini、DeepSeek、Qwen 等模型，提供路由、fallback、成本控制和日志 | 未开发 | 高 | LiteLLM | NAS Docker | 以逻辑模型名区分 daily_zh、tool_strict、planner、skill_evolver、deep_reasoner；不再使用旧模型网关作为主线 |
 | AI调度中枢层 | 统一通知推送 | 将各子系统事件推送到微信 | 未开发 | 高 | ntfy + AI Assistant Gateway → 企业微信 | NAS Docker | 系统通知走企业微信主动推送；Hermes 负责生成自然语言摘要 |
+| AI调度中枢层 | 家庭关怀引擎 | 评估家庭成员的任务负担、情绪、睡眠、经期和疲惫状态，生成温柔提醒与分担建议 | 未开发 | 高 | Hermes + Health Signals + Gateway + 企业微信 | NAS Docker | 不只管理事务，也关注家庭平衡；支持对伴侣、自己和群聊发送关怀提醒 |
 | AI调度中枢层 | 可复用 Skill Registry | 统一保存技能定义、参数 schema、权限、确认策略、测试样例和版本历史 | 未开发 | 高 | 自建 Skill Registry | NAS Docker + PostgreSQL | Dify 不引入时必须补齐的核心能力；Hermes 从 Registry 读取可用 Skills |
 | AI调度中枢层 | Skills 自动总结与进化 | 从日常微信调用、工具调用和用户修正中总结候选 Skills | 未开发 | 高 | Skill Miner + LLM 批处理 + 人工审批 | NAS Docker | 自动发现、自动草拟、自动测试；不自动扩权，不自动上线高风险技能 |
 | AI调度中枢层 | 内部服务适配层 | 屏蔽各子系统 API 差异，向 Agent 暴露稳定工具接口 | 未开发 | 高 | Service Adapter | NAS Docker | Donetick/Grocy/Mealie/ezBookkeeping/Homebox/HA 等均通过 adapter 调用 |
@@ -46,6 +47,9 @@
 | 健康监测集成 | 备孕/孕期营养与规划 | 备孕、怀孕期间饮食、营养、产检、体重和异常症状提醒 | 未开发 | 高 | Hermes 健康 Skill + 规则库 + Donetick | NAS Docker | 涉及药物、出血、剧痛、发热、胎动异常等仅提示联系医生，不自动给治疗建议 |
 | 健康监测集成 | 个人健康预测模型 | 多年数据积累后训练个人专属周期、痛感、PMS 和营养风险模型 | 规划中 | 中 | LightGBM/XGBoost/时间序列模型，必要时再评估 LSTM/TFT | NAS Docker/ai-models | 不训练专属 LLM；优先训练可解释小模型，并保留模型版本、训练数据范围和评估指标 |
 | 健康监测集成 | 经期提醒与养生茶饮任务 | 经期前提醒、痛感高风险提醒、养生茶饮/热敷/休息任务闭环 | 未开发 | 高 | Hermes → Donetick/HA/企业微信 | NAS Docker | 任务闭环管理；建议和执行均记录反馈，用于后续个性化模型训练 |
+| 家庭关系与平衡 | 伴侣状态关怀提醒 | 当一方加班过多、任务堆积、心情烦躁或睡眠不好时，自动提醒另一方减负、分担和安抚 | 未开发 | 高 | Family Care Engine + Hermes + 企业微信 | NAS Docker | 面向夫妻共同使用；提醒以温柔、非指责方式输出，支持群聊与私聊 |
+| 家庭关系与平衡 | 生理期前后协作提醒 | 当一方临近生理期、疲惫、睡眠差或烦躁时，提醒另一方提前接手家务和降低压力 | 未开发 | 高 | Family Care Engine + Health Signals + Donetick/企业微信 | NAS Docker | 强调照顾和协作，不做医学诊断；必要时只输出休息与就医提醒 |
+| 家庭关系与平衡 | 家庭成员扩展 | 后续支持将双方父母纳入家庭成员体系，按角色控制可见范围和提醒内容 | 未开发 | 中 | Gateway 成员映射 + 角色权限 | NAS Docker + 企业微信后台 | 父母默认低频关怀模式，避免暴露过多家庭内部细节 |
 | 数据存储层 | 统一数据库 | 存储各子系统结构化数据、交互日志、工具调用日志、Skill 元数据和健康时间序列 | 未开发 | 高 | PostgreSQL (主) + PgBouncer + SQLite (子系统内置) | NAS Docker (SSD 加速) | 健康数据、账本、用户行为日志需单独权限控制和备份策略 |
 | 数据存储层 | AI 交互与训练数据归档 | 保存微信对话、意图识别、参数抽取、工具调用、执行结果、用户修正和 Skill 演化记录 | 未开发 | 高 | PostgreSQL + 对象存储/文件归档 | NAS Docker/HDD | 为 Skills 自动总结和未来个人模型训练提供可追溯数据；敏感字段需脱敏/访问控制 |
 | 网络与安全 | 统一入口与 HTTPS | 为 AI 助理提供安全的对外访问 | 未开发 | 高 | Traefik 自动 Let's Encrypt | NAS Docker | 对外仅开放 AI Assistant Gateway；内部服务、Hermes、LiteLLM、数据库和 HA 均不直接公网暴露 |
