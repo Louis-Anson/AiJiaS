@@ -19,9 +19,9 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - music_data:/app/downloads
-      - /docker/go-music-dl/config:/app/config
+      - /share/Container/go-music-dl/config:/app/config
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
@@ -41,9 +41,9 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - novel_data:/app/downloads
-      - /docker/go-novel-dl/config:/app/config
+      - /share/Container/go-novel-dl/config:/app/config
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
@@ -57,14 +57,14 @@ services:
       - ND_SCANSCHEDULE=1h
       - ND_LOGLEVEL=info
     volumes:
-      - /docker/navidrome/data:/data
+      - /share/Container/navidrome/data:/data
       - music_data:/music:ro
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 照片备份与管理：Immich 官方组合 ====================
+  # ==================== 照片备份管理 — Immich (对外暴露) ====================
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
     container_name: immich-server
@@ -78,16 +78,20 @@ services:
       - REDIS_HOSTNAME=immich-redis
       - IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003
     volumes:
-      - /docker/immich/upload:/data
+      - /share/Container/immich/upload:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich-redis
       - immich-postgres
       - immich-machine-learning
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.immich.rule=Host(`immich.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.immich.entrypoints=websecure"
+      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
+      - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:
     image: ghcr.io/immich-app/immich-machine-learning:release
@@ -96,16 +100,17 @@ services:
     volumes:
       - immich_model_cache:/cache
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
   immich-redis:
-    image: redis:latest
+    image: redis:8.6-alpine
     container_name: immich-redis
     restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
@@ -119,9 +124,9 @@ services:
       - POSTGRES_DB=${IMMICH_DB_NAME}
       - POSTGRES_INITDB_ARGS=--data-checksums
     volumes:
-      - /docker/immich/postgres:/var/lib/postgresql/data
+      - /share/Container/immich/postgres:/var/lib/postgresql/data
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
@@ -131,5 +136,5 @@ volumes:
   immich_model_cache:
 
 networks:
-  aijias-internal:
+  traefik-public:
     external: true

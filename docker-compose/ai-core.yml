@@ -1,0 +1,113 @@
+# ============================================================
+# Ai Core — Hermes AI 管家 + LiteLLM 模型中继 + ntfy 通知
+# Hermes Agent 对外暴露 (hermes.relax.mycloudnas.com)
+# LiteLLM / ntfy 仅在内网访问
+# ============================================================
+
+services:
+  # ==================== Hermes AI 管家 + Dashboard (agent 3000 + dashboard 9119 同容器) ====================
+  hermes-agent:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes-agent
+    restart: unless-stopped
+    profiles:
+      - agent
+    # 官方镜像通过 s6-overlay 同时启动 agent(3000) 和 dashboard(9119)
+    # 不需要手动指定 command，默认 ENTRYPOINT 会启动所有内置服务
+    environment:
+      - TZ=Asia/Shanghai
+      - HERMES_UID=10000
+      - HERMES_GID=10000
+      # --- AI 模型 (通过内网 LiteLLM 中继) ---
+      - LLM_API_KEY=${LITELLM_MASTER_KEY}
+      - LLM_BASE_URL=http://litellm:4000/v1
+      # --- 数据库与缓存 ---
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgbouncer:6432/${POSTGRES_DB}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      # --- 通知 ---
+      - NTFY_BASE_URL=http://ntfy:80
+      - NTFY_TOKEN=${NTFY_TOKEN}
+      # --- Home Assistant ---
+      - HOME_ASSISTANT_URL=${HOME_ASSISTANT_URL}
+      - HA_LONG_LIVED_ACCESS_TOKEN=${HA_LONG_LIVED_ACCESS_TOKEN}
+      # --- 家庭系统服务 API (Hermes 直接调用或通过 Service Adapter) ---
+      - DONETICK_BASE_URL=http://donetick:2021
+      - MEALIE_BASE_URL=http://mealie:9000
+      - HOMEBOX_BASE_URL=http://homebox:7745
+      - FIREFLY_BASE_URL=http://firefly:8080
+      - LUBELOGGER_BASE_URL=http://lubelogger:8080
+      - IMMICH_BASE_URL=http://immich-server:2283
+      - NAVIDROME_BASE_URL=http://navidrome:4533
+      - PERIOD_PREDICTOR_BASE_URL=http://period-predictor:5000
+      # --- 公网回调 ---
+      - EXTERNAL_BASE_URL=https://hermes.${DOMAIN_EXTERNAL}
+      - LOG_LEVEL=info
+    volumes:
+      # 官方镜像数据目录是 /opt/data
+      - /share/Container/hermes/data:/opt/data
+    depends_on:
+      - litellm
+      - pgbouncer
+    networks:
+      - traefik-public
+    labels:
+      # --- Agent API: 公网 hermes.relax.mycloudnas.com ---
+      - "traefik.enable=true"
+      - "traefik.http.routers.hermes.rule=Host(`hermes.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.hermes.entrypoints=websecure"
+      - "traefik.http.routers.hermes.tls.certresolver=letsencrypt"
+      - "traefik.http.services.hermes.loadbalancer.server.port=3000"
+      # --- Dashboard WebUI: 内网 hermes-ui.relax.local (同容器, 端口 9119) ---
+      - "traefik.http.routers.hermes-ui.rule=Host(`hermes-ui.${DOMAIN_INTERNAL}`)"
+      - "traefik.http.routers.hermes-ui.entrypoints=websecure"
+      - "traefik.http.routers.hermes-ui.tls=true"
+      - "traefik.http.services.hermes-ui.loadbalancer.server.port=9119"
+
+  # ==================== LiteLLM 模型中继 (内网) ====================
+  litellm:
+    image: docker.litellm.ai/berriai/litellm:main-stable
+    container_name: litellm
+    restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      - TZ=Asia/Shanghai
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - LITELLM_SALT_KEY=${LITELLM_SALT_KEY}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      # --- DeepSeek 官方 API ---
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      # --- 4SAPI 中转站 (GPT / Claude / Gemini) ---
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_BASE=${OPENAI_API_BASE}
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=false"
+
+  # ==================== ntfy 通知服务 (内网) ====================
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command: serve
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /share/Container/ntfy/cache:/var/cache/ntfy
+      - /share/Container/ntfy/etc:/etc/ntfy
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  traefik-public:
+    external: true

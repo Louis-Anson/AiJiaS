@@ -1,0 +1,31 @@
+# ============================================================
+# SillyTavern — AI 聊天前端 (对外暴露 chat.relax.mycloudnas.com)
+# ============================================================
+
+services:
+  sillytavern:
+    image: ghcr.io/sillytavern/sillytavern:latest
+    container_name: sillytavern
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - SILVERLEGACY_ALLOW_ORIGINS=*
+      - SILVERLEGACY_LISTENING=true
+      - SILVERLEGACY_PORT=8000
+    volumes:
+      - /share/Container/sillytavern/data:/home/node/app/data
+      - /share/Container/sillytavern/config:/home/node/app/config
+      - /share/Container/sillytavern/plugins:/home/node/app/plugins
+      - /share/Container/sillytavern/extensions:/home/node/app/public/extensions
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sillytavern.rule=Host(`chat.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.sillytavern.entrypoints=websecure"
+      - "traefik.http.routers.sillytavern.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sillytavern.loadbalancer.server.port=8000"
+
+networks:
+  traefik-public:
+    external: true

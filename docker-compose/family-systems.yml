@@ -1,7 +1,11 @@
-version: "3.9"
+# ============================================================
+# 家庭业务系统 — 全部内网访问 (relax.local)
+# Donetick / Mealie / Homebox / Firefly III / LubeLogger
+# 全部连接主 PostgreSQL (database.yml), 不再单独起 PG 容器
+# ============================================================
 
 services:
-  # ==================== 家庭任务 ====================
+  # ==================== 家务任务 (SQLite) ====================
   donetick:
     image: donetick/donetick:beta
     container_name: donetick
@@ -11,29 +15,13 @@ services:
       - DT_ENV=selfhosted
       - DT_SQLITE_PATH=/donetick-data/donetick.db
     volumes:
-      - /docker/donetick/data:/donetick-data
+      - /share/Container/donetick/data:/donetick-data
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 食物库存 ====================
-  grocy:
-    image: linuxserver/grocy:latest
-    container_name: grocy
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID:-1000}
-      - PGID=${PGID:-1000}
-      - TZ=Asia/Shanghai
-    volumes:
-      - /docker/grocy/config:/config
-    networks:
-      - aijias-internal
-    labels:
-      - "traefik.enable=false"
-
-  # ==================== 菜谱管理：默认 Mealie，Tandoor 可选 ====================
+  # ==================== 菜谱管理 (主 PG) ====================
   mealie:
     image: ghcr.io/mealie-recipes/mealie:latest
     container_name: mealie
@@ -41,47 +29,23 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - ALLOW_SIGNUP=false
-      - BASE_URL=${MEALIE_BASE_URL}
+      - BASE_URL=http://mealie.${DOMAIN_INTERNAL}
+      - DB_ENGINE=postgres
+      - POSTGRES_USER=mealie
+      - POSTGRES_PASSWORD=${MEALIE_DB_PASSWORD}
+      - POSTGRES_SERVER=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=mealie
     volumes:
-      - /docker/mealie/data:/app/data
+      - /share/Container/mealie/data:/app/data
+    depends_on:
+      - postgres
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
-  tandoor:
-    image: vabene1111/recipes:latest
-    container_name: tandoor
-    restart: unless-stopped
-    profiles:
-      - recipes-advanced
-    environment:
-      - SECRET_KEY=${TANDOOR_SECRET}
-      - DB_ENGINE=django.db.backends.sqlite3
-      - TZ=Asia/Shanghai
-    volumes:
-      - /docker/tandoor/static:/opt/recipes/staticfiles
-      - /docker/tandoor/media:/opt/recipes/mediafiles
-    networks:
-      - aijias-internal
-    labels:
-      - "traefik.enable=false"
-
-  # ==================== 记账 ====================
-  ezbookkeeping:
-    image: mayswind/ezbookkeeping:latest
-    container_name: ezbookkeeping
-    restart: unless-stopped
-    environment:
-      - TZ=Asia/Shanghai
-    volumes:
-      - /docker/ezbookkeeping/data:/ezbookkeeping/data
-    networks:
-      - aijias-internal
-    labels:
-      - "traefik.enable=false"
-
-  # ==================== 家庭资产管理 ====================
+  # ==================== 物品 / 衣物管理 (SQLite) ====================
   homebox:
     image: sysadminsmedia/homebox:latest
     container_name: homebox
@@ -94,27 +58,53 @@ services:
       - /share/Container/homebox/data:/data
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - aijias-internal
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 旅行规划：非核心，可按需启用 ====================
-  trek:
-    image: mauriceboe/trek:2.7.0
-    container_name: trek
+  # ==================== 家庭记账 Firefly III (主 PG) ====================
+  firefly:
+    image: fireflyiii/core:latest
+    container_name: firefly
     restart: unless-stopped
-    profiles:
-      - travel
     environment:
-      - JWT_SECRET=${TREK_JWT_SECRET}
       - TZ=Asia/Shanghai
+      - APP_KEY=${FIREFLY_APP_KEY}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=firefly
+      - DB_USERNAME=firefly
+      - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
+      - APP_URL=http://firefly.${DOMAIN_INTERNAL}
+      - TRUSTED_PROXIES=**
     volumes:
-      - /docker/trek/data:/app/data
+      - /share/Container/firefly/data:/var/www/html/storage/upload
+    depends_on:
+      - postgres
     networks:
-      - aijias-internal
+      - traefik-public
+    labels:
+      - "traefik.enable=false"
+
+  # ==================== 车辆保养 LubeLogger (主 PG) ====================
+  lubelogger:
+    image: ghcr.io/hargata/lubelogger:latest
+    container_name: lubelogger
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - POSTGRES_CONNECTION=Host=postgres:5432;Username=lubelogger;Password=${LUBELOGGER_DB_PASSWORD};Database=lubelogger;
+    volumes:
+      - /share/Container/lubelogger/data:/App/Data
+      - /share/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
+    depends_on:
+      - postgres
+    networks:
+      - traefik-public
     labels:
       - "traefik.enable=false"
 
 networks:
-  aijias-internal:
+  traefik-public:
     external: true
