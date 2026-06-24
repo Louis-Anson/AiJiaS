@@ -22,16 +22,16 @@
 | AI调度中枢层 | 家庭关怀引擎 | 评估家庭成员的任务负担、情绪、睡眠、经期和疲惫状态，生成温柔提醒与分担建议 | 未开发 | 高 | Hermes + Health Signals + Gateway + 企业微信 | NAS Docker | 不只管理事务，也关注家庭平衡；支持对伴侣、自己和群聊发送关怀提醒 |
 | AI调度中枢层 | 可复用 Skill Registry | 统一保存技能定义、参数 schema、权限、确认策略、测试样例和版本历史 | 未开发 | 高 | 自建 Skill Registry | NAS Docker + PostgreSQL | Dify 不引入时必须补齐的核心能力；Hermes 从 Registry 读取可用 Skills |
 | AI调度中枢层 | Skills 自动总结与进化 | 从日常微信调用、工具调用和用户修正中总结候选 Skills | 未开发 | 高 | Skill Miner + LLM 批处理 + 人工审批 | NAS Docker | 自动发现、自动草拟、自动测试；不自动扩权，不自动上线高风险技能 |
-| AI调度中枢层 | 内部服务适配层 | 屏蔽各子系统 API 差异，向 Agent 暴露稳定工具接口 | 未开发 | 高 | Service Adapter | NAS Docker | Donetick/Grocy/Mealie/ezBookkeeping/Homebox/HA 等均通过 adapter 调用 |
+| AI调度中枢层 | 内部服务适配层 | 屏蔽各子系统 API 差异，向 Agent 暴露稳定工具接口 | 未开发 | 高 | Service Adapter | NAS Docker | Donetick/Mealie/Firefly III/Homebox/HA 等均通过 adapter 调用 |
 | API 网关与统一入口 | 反向代理与 SSL 终结 | 统一对外入口，自动签发和续期 SSL 证书，路由请求到内部服务 | 未开发 | 高 | Traefik | NAS Docker | 监听 80/443 端口，通过 Docker Labels 自动发现服务；替代 NPM |
 | API 网关与统一入口 | 网关可视化管理 | 提供 Web UI 管理 Traefik 路由、证书和中间件 | 未开发 | 中 | Traefik Manager | NAS Docker | 内网访问，简化后期运维 |
 | 家庭任务系统 | 任务编排与状态跟踪 | 一句话创建任务、查看进度、评论互动 | 未开发 | 高 | Donetick | NAS Docker | 通过 Traefik 路由，内网服务不暴露公网端口 |
-| 家庭任务系统 | 菜谱录入与点餐 | 菜谱管理、膳食计划、根据食材推荐 | 未开发 | 高 | Tandoor Recipes | NAS Docker | 与 Grocy 库存联动；内网服务 |
-| 食物状态系统 | 库存管理 | 品类、数量、采购日期、保质期管理 | 未开发 | 高 | Grocy | NAS Docker | 支持条码扫描；自定义临期提醒；内网服务 |
-| 食物状态系统 | 烹饪建议 | 根据现有食材推荐可制作菜肴 | 未开发 | 高 | Hermes Skill 调用 Grocy + 菜谱系统 API | NAS Docker | 通过 Service Adapter 调用内网 API；建议初期评估 Mealie 优先，重度菜谱管理再选 Tandoor |
+| 家庭任务系统 | 菜谱录入与点餐 | 菜谱管理、膳食计划、根据食材推荐 | 未开发 | 高 | Tandoor Recipes | NAS Docker | 内网服务；与 Mealie 食材库存联动 |
+| 食物状态系统 | 库存管理 | 品类、数量、采购日期、保质期管理 | 未开发 | 高 | Mealie + Homebox | NAS Docker | Mealie 管理食材库存和保质期；Homebox 管理物品资产；内网服务 |
+| 食物状态系统 | 烹饪建议 | 根据现有食材推荐可制作菜肴 | 未开发 | 高 | Hermes Skill 调用 Mealie + Homebox API | NAS Docker | 通过 Service Adapter 调用内网 API；已选用 Mealie 作为菜谱和食材管理方案 |
 | 家庭资产管理 | 衣物/鞋帽/床上用品管理 | 记录购买时间、使用状态、清洗周期，支持特殊衣物（冲锋衣/滑雪服）维护提醒 | 未开发 | 高 | Homebox | NAS Docker | 通过 API 与 AI 调度中枢集成，支持多用户；镜像：sysadminsmedia/homebox |
-| 家用记账系统 | 收支记录与统计 | 收入/支出分类记录、图表分析、实时查询 | 未开发 | 高 | ezBookkeeping | NAS Docker | 内网服务；支持微信/支付宝账单导入 |
-| 家用记账系统 | 微信触发记账 | 通过微信消息自动添加记账条目 | 未开发 | 高 | Hermes Skill + ezBookkeeping API | NAS Docker | 通过 Service Adapter 写入；大额、付款人不明确、分类低置信度时需要二次确认 |
+| 家用记账系统 | 收支记录与统计 | 收入/支出分类记录、图表分析、实时查询 | 未开发 | 高 | Firefly III | NAS Docker | 内网服务；支持微信/支付宝账单导入 |
+| 家用记账系统 | 微信触发记账 | 通过微信消息自动添加记账条目 | 未开发 | 高 | Hermes Skill + Firefly III API | NAS Docker | 通过 Service Adapter 写入；大额、付款人不明确、分类低置信度时需要二次确认 |
 | 智能家居中枢 | 设备统一接入与控制 | 接入空调、洗衣机、门锁、传感器等 | 未开发 | 高 | Home Assistant OS (虚拟机) | QNAP Virtualization Station | 桥接网络，独立 IP；通过 Traefik 代理并信任转发 |
 | 多媒体系统 | 小说下载与搜刮 | 聚合多平台搜索下载小说，支持 TXT/EPUB 导出，提供 Web 界面 | 未开发 | 中 | Go Novel DL | NAS Docker | 与音乐服务共享 traefik 网络，通过域名访问；支持定时追更 |
 | 多媒体系统 | 音乐下载与搜刮 | 聚合 10+ 平台搜索下载无损音乐，支持歌单导入与加密解密 | 未开发 | 中 | Go Music DL | NAS Docker | 提供 Web 界面，与 Navidrome 共享音乐目录 |

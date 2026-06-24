@@ -1,22 +1,31 @@
-homeassistant:
-  name: 家
-  latitude: 31.82
-  longitude: 117.23
-  unit_system: metric
-  time_zone: Asia/Shanghai
-  country: CN
-  customize: !include customize.yaml
+# AiJiaS — Home Assistant 主配置文件
+# 版本：HA OS 18.0
+#
+# 说明：
+#   - name/latitude/longitude/time_zone 等基础设置请在 HA Web UI 中配置
+#     （Settings → System → General），不要写在此文件中。
+#   - recorder 使用 HA 默认 SQLite，不接外部 PostgreSQL。
+#     原因：HA 运行在 VM 中，无法直接访问 Docker 内网中的 PostgreSQL。
+#   - http.trusted_proxies 设为 Docker 内部网段，因为 Traefik 在此网段反向代理 HA。
 
 default_config:
 
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 192.168.1.0/24
+    - 172.16.0.0/12           # Docker 默认 bridge 网段（Traefik 在此）
 
+# 按文件拆分（按需启用）
 input_datetime: !include input_datetime.yaml
 sensor: !include sensors.yaml
 automation: !include automations.yaml
 
-recorder:
-  db_url: !secret recorder_db_url
+# ==================== 推荐通过 UI 添加的集成 ====================
+# 以下集成在 HA Web UI → 设置 → 设备与服务 → 添加集成 中配置，
+# 不需要写在这个文件里：
+#
+#   gree                — 格力空调（WiFi，自动发现）
+#   apple_tv            — HomePod（自动发现，media_player 域）
+#   mobile_app          — HA Companion App（手机定位 + 通知推送）
+#   sgcc_electricity    — 国家电网电费查询（需先安装 HACS）
+#   midea_ac_lan        — 小天鹅洗衣机（HACS，仅状态读取）

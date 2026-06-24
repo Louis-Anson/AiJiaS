@@ -1,0 +1,35 @@
+# 物品管理 — 通过 Homebox 管理家庭物品
+# Homebox API: GET/POST /api/v1/items
+# 查询无需确认；创建/更新/删除需确认
+
+skills:
+  - id: homebox.search_items
+    name: 物品查询
+    service: homebox
+    action: search_items
+    description: 查询家庭物品（衣物、装备、工具等），含维护提醒
+    risk: low
+    input:
+      query: "string*"
+      label: string
+      location: string
+    confirm: false
+    redlines:
+      - 删除物品必须确认
+
+  - id: homebox.create_item
+    name: 添加物品
+    service: homebox
+    action: create_item
+    description: 添加新物品（含购买日期、价格、维护周期）
+    risk: medium
+    input:
+      name: "string*"
+      description: string
+      label: string
+      location: string
+      purchase_date: date
+      purchase_price: number
+      maintenance_interval: string
+    confirm: 涉及添加家庭资产，需确认物品信息
+    redlines: []

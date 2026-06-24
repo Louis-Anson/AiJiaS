@@ -9,6 +9,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
       TZ: Asia/Shanghai
+      # --- 传给 init 脚本 01-create-databases.sh，用于建库建角色 ---
+      # 仅首次启动（数据目录为空）时执行；这些变量不会被 PG 自身使用
+      FIREFLY_DB_PASSWORD: ${FIREFLY_DB_PASSWORD}
+      MEALIE_DB_PASSWORD: ${MEALIE_DB_PASSWORD}
+      LUBELOGGER_DB_PASSWORD: ${LUBELOGGER_DB_PASSWORD}
+      # 可选：设置后 init 脚本会为 LiteLLM 创建独立的 litellm 库
+      LITELLM_DB_PASSWORD: ${LITELLM_DB_PASSWORD:-}
     command: >
       postgres
       -c max_connections=200
@@ -20,7 +27,7 @@ services:
       - /share/Container/postgres/data:/var/lib/postgresql/data
       - ../postgresql/init:/docker-entrypoint-initdb.d:ro
     networks:
-      - traefik-public
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -55,7 +62,7 @@ services:
     volumes:
       - /share/Container/redis/data:/data
     networks:
-      - traefik-public
+      - internal
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -85,7 +92,7 @@ services:
       MAX_CLIENT_CONN: 100
       IDLE_TIMEOUT: 600
     networks:
-      - traefik-public
+      - internal
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,5 +112,5 @@ services:
         max-file: "3"
 
 networks:
-  traefik-public:
-    external: true
+  internal:
+    

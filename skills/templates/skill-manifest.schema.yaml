@@ -1,27 +1,32 @@
-id: example.skill_id
-name: 示例技能
-version: 0.1.0
-status: draft
-owner: family
-risk_level: low
-service_adapter:
-  service: example-service
-  action: example_action
-trigger_examples:
-  - 示例自然语言触发句
-input_schema:
-  type: object
-  required: []
-  properties: {}
-confirmation:
-  required: false
-  reason: low risk read-only action
-audit:
-  log_request: true
-  log_response: true
-  redact_fields: []
-tests:
-  - name: happy_path
-    input: {}
-    expect:
-      status: success
+# 新技能模板
+# 单技能（1:1 服务映射）用平铺格式；多技能用 skills: 列表格式
+
+# ----- 模板 A：单技能（推荐） -----
+id: domain.action
+name: 技能名称
+service: 目标服务
+action: 具体动作
+description: 简要描述
+risk: low
+input:
+  field1: "string*"          # * 必填，[val] 默认值，enum[a,b] 枚举
+  field2: string
+confirm: false               # 需确认则写 true 或说明原因
+redlines:
+  - 安全红线描述
+
+# ----- 模板 B：多技能（同一服务多个 action） -----
+# skills:
+#   - id: domain.action1
+#     name: 技能 1
+#     service: 服务名
+#     action: 动作名
+#     description: 描述
+#     risk: low
+#     input:
+#       param: string
+#     confirm: false
+#     redlines: []
+#   - id: domain.action2
+#     name: 技能 2
+#     ...

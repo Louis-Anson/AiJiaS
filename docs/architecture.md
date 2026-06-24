@@ -44,10 +44,11 @@ flowchart TB
     subgraph HomeServices[内网家庭服务群 - Docker / VM]
         direction LR
         Tasks[家务任务<br/>Donetick]
-        Food[食材与菜谱<br/>Grocy + Tandoor / Mealie]
-        Books[家庭账本<br/>ezBookkeeping]
+        Food[食材与菜谱<br/>Mealie]
+        Books[家庭账本<br/>Firefly III]
         Assets[物品衣物<br/>Homebox]
         Media[照片与音乐<br/>Immich / Navidrome]
+        PwdMgr[密码管理<br/>Vaultwarden]
         Health[女性健康时间线<br/>规则引擎 + 统计模型]
         HA[智能家居中枢<br/>Home Assistant OS VM]
     end
@@ -148,6 +149,85 @@ flowchart TB
     linkStyle default stroke:#d9c5b2,stroke-width:1.8px,color:#806b5c
 ```
 
+## Docker 网络拓扑（三层隔离）
+
+> 三层网络实现数据库隔离：`traefik-public` 对外路由、`internal` 主数据库专用、`immich-internal` Immich 内部专用。
+
+```mermaid
+flowchart TB
+    subgraph Internet["🌐 公网"]
+    end
+
+    subgraph TPublic["traefik-public — 路由层"]
+        direction LR
+        T["Traefik :443"] --> GW["hermes-agent :3000"]
+        T --> IM["immich-server :2283"]
+        T --> VW["vaultwarden :80"]
+        T --> ST["sillytavern :8000"]
+        T --> TK["traefik-manager :8081"]
+        NT["ntfy"] -.->|traefik.enable=false| T
+        DT["donetick"] -.->|traefik.enable=false| T
+        HB["homebox"] -.->|traefik.enable=false| T
+    end
+
+    subgraph Internal["internal — 主数据库层"]
+        direction LR
+        PG["(PostgreSQL :5432)"]
+        RD["(Redis :6379)"]
+        PB["PgBouncer :6432"]
+    end
+
+    subgraph ImmichNet["immich-internal — 照片服务专属"]
+        direction LR
+        IPG["immich-postgres
+PG17+pgvector"]
+        IRD["immich-redis
+LRU 临时队列"]
+        ML["immich-machine-learning
+人脸识别模型"]
+    end
+
+    subgraph Apps["需要主数据库的应用"]
+        direction LR
+        HA["hermes-agent"]
+        LL["litellm"]
+        ML2["mealie"]
+        FF["firefly"]
+        LB["lubelogger"]
+    end
+
+    Internet --> T
+    HA --> PB
+    LL --> PG
+    LL --> RD
+    ML2 --> PG
+    FF --> PG
+    LB --> PG
+    IM --> IPG
+    IM --> IRD
+    IM --> ML
+
+    classDef pub fill:#e8f5e9,stroke:#81c784,color:#333
+    classDef db fill:#fff3e0,stroke:#ffb74d,color:#333
+    classDef imm fill:#e3f2fd,stroke:#64b5f6,color:#333
+    classDef app fill:#f3e5f5,stroke:#ba68c8,color:#333
+
+    class T,GW,IM,VW,ST,TK,NT,DT,HB pub
+    class PG,RD,PB db
+    class IPG,IRD,ML imm
+    class HA,LL,ML2,FF,LB app
+```
+
+### 网络隔离规则
+
+| 网络 | 创建方式 | 成员 | 可以看到什么 |
+|------|---------|------|------------|
+| `traefik-public` | 手动 `docker network create` | Traefik + 需要对外暴露的服务 + 无 DB 依赖的轻量服务 | 所有同网络容器的端口 |
+| `internal` | `database.yml` 自动创建 | PostgreSQL、Redis、PgBouncer + 需要主 DB 的应用 | 主数据库端口 5432/6379/6432 |
+| `immich-internal` | `media.yml` 自动创建 | 仅 Immich 4 个容器（server、postgres、redis、ml） | Immich 专属数据库端口 |
+
+> **关键原则**：`immich-postgres` 不在 `internal` 网络中，主 PostgreSQL 不在 `immich-internal` 中，两者物理隔离。Immich 升级/崩溃不影响家庭账本和菜谱数据。
+
 ## 长期最佳架构
 
 AiJiaS 的长期架构原则是：**成熟基础设施用现成镜像，家庭专属逻辑自建镜像，自建服务尽量小而稳定，并通过 profiles 分阶段启用**。
@@ -160,20 +240,18 @@ Traefik
           -> Skill Registry     后期自建，技能版本与权限管理
           -> Service Adapter    自建，统一封装家庭系统 API
               -> Donetick
-              -> Grocy
-              -> Mealie / Tandoor
-              -> ezBookkeeping
+              -> Mealie
+              -> Firefly III
               -> Homebox
               -> Home Assistant
               -> Immich
               -> Navidrome
               -> Period Predictor
-      -> PostgreSQL
-      -> Redis
+              -> Vaultwarden         Bitwarden 兼容密码管理器
       -> ntfy / 企业微信
 ```
 
-这套结构把“家里的业务判断”和“成熟开源服务”分开：Traefik 只负责入口和证书；LiteLLM 只负责模型路由；Donetick、Grocy、Mealie、ezBookkeeping、Homebox、Immich 等只做各自擅长的事情；AiJiaS 自建层只负责家庭身份、权限、审计、技能与服务适配。
+这套结构把“家里的业务判断”和“成熟开源服务”分开：Traefik 只负责入口和证书；LiteLLM 只负责模型路由；Donetick、Mealie、Firefly III、Homebox、Immich 等只做各自擅长的事情；AiJiaS 自建层只负责家庭身份、权限、审计、技能与服务适配。
 
 自建镜像的目录组织、Dockerfile 模板、构建命令和发布检查清单见 [self-built-images.md](self-built-images.md)。
 
@@ -182,7 +260,8 @@ Traefik
 | 类型 | 服务 | 策略 |
 | :--- | :--- | :--- |
 | 成熟底座 | Traefik、PostgreSQL、Redis、PgBouncer、ntfy、LiteLLM | 直接拉取官方或成熟镜像，稳定后固定版本或 digest。 |
-| 家庭子系统 | Donetick、Grocy、Mealie、ezBookkeeping、Homebox、Immich、Navidrome | 直接使用上游镜像，默认只在内网暴露。 |
+| 家庭子系统 | Donetick、Mealie、Firefly III、Homebox、Immich、Navidrome | 直接使用上游镜像，默认只在内网暴露。 |
+| 家庭子系统 | Vaultwarden | 直接使用上游镜像，默认只在内网暴露。 |
 | 必须自建 | AI Assistant Gateway、Service Adapter | 长期必须自建，因为它们包含家庭成员映射、权限、审计、高危确认和统一 API 适配。 |
 | 可后期自建 | Hermes Runtime、Skill Registry、Skill Miner、Period Predictor | 用 profiles 延后启用，避免未完成镜像阻塞基础设施启动。 |
 
@@ -202,13 +281,11 @@ Traefik
 
 ```text
 1. 先启动基础设施：Traefik / PostgreSQL / Redis / PgBouncer / LiteLLM / ntfy
-2. 启动家庭子系统：Donetick / Grocy / Mealie / ezBookkeeping / Homebox / Immich / Navidrome
+2. 启动家庭子系统：Donetick / Mealie / Firefly III / Homebox / Immich / Navidrome / Vaultwarden
 3. 自建并启用 AI Assistant Gateway
 4. 自建并启用 Service Adapter
 5. 接入 Hermes Runtime
 6. 再做 Skill Registry / Skill Miner / Period Predictor
-```
-
 ## 自建镜像边界
 
 `AI Assistant Gateway` 不只是普通反向代理，它需要理解企业微信身份、家庭成员、敏感操作确认、审计日志和回复链路；这部分不能完全交给 Traefik、Kong 或 APISIX。

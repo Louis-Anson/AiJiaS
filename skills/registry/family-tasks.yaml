@@ -1,43 +1,33 @@
-id: chores.create_or_update_task
-name: 家务任务
-version: 1.0.0
-status: approved
-owner: family
-risk_level: medium
-service_adapter:
-  service: donetick
-  action: create_or_update_task
-trigger_examples:
-  - 周六提醒我换床单
-  - 创建一个倒垃圾任务
-  - 每两周清洗一次洗衣机
-input_schema:
-  type: object
-  required:
-    - title
-  properties:
-    title:
-      type: string
-    assignee:
-      type: string
-    due_at:
-      type: string
-      format: date-time
-    recurrence:
-      type: string
-    notes:
-      type: string
-confirmation:
-  required: true
-  reason: 会创建或修改家庭任务，需确认执行对象和时间。
-audit:
-  log_request: true
-  log_response: true
-  redact_fields: []
-tests:
-  - name: recurring_chore
+# 家务任务 — 通过 Donetick 创建/管理家庭任务
+# Donetick 以任务（task/chore）为核心，支持定时、循环、分配
+# Donetick API: POST/GET /api/v1/tasks
+
+skills:
+  - id: chores.create_task
+    name: 创建家务任务
+    service: donetick
+    action: create_task
+    description: 创建新任务，支持定时、循环、分配给家庭成员
+    risk: medium
     input:
-      title: 清洗洗衣机
-      recurrence: P14D
-    expect:
-      status: pending_confirmation
+      title: "string*"
+      description: string
+      due_date: datetime
+      recurrence: string
+      assignee: string
+      priority: string
+    confirm: 需确认任务内容、执行人和时间
+    redlines: []
+
+  - id: chores.list_tasks
+    name: 查看任务
+    service: donetick
+    action: list_tasks
+    description: 查看待办、已完成、逾期任务
+    risk: low
+    input:
+      status: "string [pending]"
+      assignee: string
+      due_before: date
+    confirm: false
+    redlines: []

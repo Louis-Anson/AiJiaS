@@ -1,46 +1,23 @@
-id: smarthome.control_device
-name: 智能家居控制
-version: 1.0.0
-status: approved
-owner: family
-risk_level: high
-service_adapter:
-  service: home-assistant
-  action: call_service
-trigger_examples:
-  - 把客厅灯打开
-  - 空调调到 26 度
-  - 洗衣机结束后提醒我晾衣服
-input_schema:
-  type: object
-  required:
-    - domain
-    - service
-  properties:
-    domain:
-      type: string
-    service:
-      type: string
-    entity_id:
-      type: string
-    service_data:
-      type: object
-confirmation:
-  required: true
-  reason: 涉及设备控制；门锁、安防和大功率设备必须二次确认。
-audit:
-  log_request: true
-  log_response: true
-  redact_fields: []
-high_risk_entities:
-  - lock.*
-  - alarm_control_panel.*
-  - switch.high_power_*
-tests:
-  - name: turn_on_light
-    input:
-      domain: light
-      service: turn_on
-      entity_id: light.living_room
-    expect:
-      status: pending_confirmation
+# 智能家居通用控制 — 通过 Home Assistant REST API 控制家中设备
+# HA API: POST /api/services/{domain}/{ha_action}
+# 门锁、安防、空调、洗衣机必须二次确认
+# 注意：灯光、空调、场景有专门的 skill（home-automation.yaml），
+#       本 skill 是通用兜底，用于其他未分类设备
+id: home.control_device
+name: 智能家居通用控制
+service: home-assistant
+action: call_service
+description: 通用设备控制兜底（灯光/空调/场景优先用 home-automation.yaml）
+risk: high
+input:
+  domain: "string*"         # HA domain: switch, cover, fan, vacuum, lock
+  ha_action: "string*"      # HA service
+  entity_id: string
+  data: object
+confirm: 涉及设备控制；空调、洗衣机、门锁、安防必须二次确认
+redlines:
+  - lock.*（门锁类设备必须确认）
+  - alarm_control_panel.*（安防设备必须确认）
+  - climate.*（空调类设备需确认，光照/温度调节除外）
+  - switch.washer_*（洗衣机类大功率设备必须确认）
+  - 不允许在无人状态下执行高风险操作

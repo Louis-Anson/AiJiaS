@@ -1,0 +1,77 @@
+# 家庭场景自动化 — 灯光、空调、回家/离家模式
+# 通过 Home Assistant REST API 控制设备
+
+skills:
+  # ----- 灯光控制 -----
+  - id: home.lights_on
+    name: 开灯
+    service: home-assistant
+    action: call_service
+    description: 打开指定区域灯光
+    risk: low
+    input:
+      domain: "enum[light]*"
+      ha_action: "enum[turn_on]*"
+      entity_id: string
+      brightness: "number [0-255]"
+      color_temp: number
+    confirm: false
+    redlines: []
+
+  - id: home.lights_off
+    name: 关灯
+    service: home-assistant
+    action: call_service
+    description: 关闭指定区域灯光（全部关闭需确认）
+    risk: low
+    input:
+      domain: "enum[light]*"
+      ha_action: "enum[turn_off]*"
+      entity_id: string
+    confirm: false
+    redlines:
+      - 关闭全部灯光（无 entity_id）需确认
+
+  # ----- 空调控制 -----
+  - id: home.climate_control
+    name: 空调控制
+    service: home-assistant
+    action: call_service
+    description: 开关空调、调温度、切换模式
+    risk: medium
+    input:
+      domain: "enum[climate]*"
+      ha_action: "enum[turn_on, turn_off, set_temperature, set_hvac_mode]*"
+      entity_id: string
+      temperature: number
+      hvac_mode: "enum[cool, heat, dry, fan_only, off]"
+    confirm: 调温度无需确认；离家后开关空调需确认
+    redlines: []
+
+  # ----- 场景模式 -----
+  - id: home.scene_activate
+    name: 场景切换
+    service: home-assistant
+    action: call_service
+    description: 执行预设场景（离家模式、回家模式、睡眠模式等）
+    risk: medium
+    input:
+      domain: "enum[scene]*"
+      ha_action: "enum[turn_on]*"
+      entity_id: "string*"
+    confirm: 离家模式涉及全屋设备关闭，需确认
+    redlines:
+      - scene.away（离家模式）必须确认
+      - scene.guest（访客模式）需确认
+
+  # ----- 设备状态查询 -----
+  - id: home.device_status
+    name: 设备状态查询
+    service: home-assistant
+    action: get_state
+    description: 查询任意设备的当前状态（开关、温度、电量等）
+    risk: low
+    input:
+      entity_id: "string*"
+    confirm: false
+    redlines: []

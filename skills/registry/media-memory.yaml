@@ -1,42 +1,36 @@
-id: media.search_and_play
-name: 回忆与音乐
-version: 1.0.0
-status: approved
-owner: family
-risk_level: low
-service_adapter:
-  service: media
-  action: search_and_play
-trigger_examples:
-  - 播放一点适合做饭的音乐
-  - 找一下去年夏天的照片
-  - 帮我搜这首歌有没有无损版
-input_schema:
-  type: object
-  required:
-    - query
-  properties:
-    query:
-      type: string
-    media_type:
-      type: string
-      enum:
-        - music
-        - photo
-        - novel
-    target_player:
-      type: string
-confirmation:
-  required: false
-  reason: 默认只查询和播放；下载、删除或公开分享由 adapter 升级风险等级。
-audit:
-  log_request: true
-  log_response: true
-  redact_fields: []
-tests:
-  - name: play_music
+# 照片备份与回忆 — 通过 Immich API 管理家庭照片
+# Immich API: /api/albums, /api/assets
+# 读取操作无需确认；删除或分享需确认
+
+skills:
+  - id: media.search_photos
+    name: 照片搜索
+    service: immich
+    action: search_assets
+    description: 按日期、人脸、地点搜索家庭照片
+    risk: low
     input:
-      query: 做饭时听的轻音乐
-      media_type: music
-    expect:
-      status: success
+      query: "string*"
+      start_date: date
+      end_date: date
+      person: string
+      album: string
+    confirm: false
+    redlines:
+      - 删除照片必须确认
+      - 公开分享必须确认
+
+  - id: media.play_music
+    name: 音乐播放
+    service: navidrome
+    action: search_and_play
+    description: 搜索家庭曲库并播放音乐
+    risk: low
+    input:
+      query: "string*"
+      artist: string
+      album: string
+      genre: string
+    confirm: false
+    redlines:
+      - 下载/删除音乐文件需确认

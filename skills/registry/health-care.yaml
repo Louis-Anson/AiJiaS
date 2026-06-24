@@ -1,53 +1,22 @@
+# 经期与健康关怀 — 通过 period-predictor 预测周期并提供关怀建议
+# 健康数据只能记录和提醒，不能替代医生诊断
+# 剧烈疼痛、异常出血等触发固定就医规则（不可越过）
 id: health.period_care
 name: 经期与健康关怀
-version: 1.0.0
-status: approved
-owner: family
-risk_level: high
-service_adapter:
-  service: period-predictor
-  action: predict_and_plan_care
-trigger_examples:
-  - 帮我看看下次生理期大概什么时候
-  - 这几天痛经风险高吗
-  - 提醒我经期前准备热敷和茶饮
-input_schema:
-  type: object
-  required: []
-  properties:
-    last_period_start:
-      type: string
-      format: date
-    symptoms:
-      type: array
-      items:
-        type: string
-    pain_score:
-      type: number
-      minimum: 0
-      maximum: 10
-    sleep_hours:
-      type: number
-    basal_body_temperature:
-      type: number
-confirmation:
-  required: true
-  reason: 健康相关建议必须以提醒和记录为主，不能替代医生诊断。
-audit:
-  log_request: true
-  log_response: true
-  redact_fields:
-    - symptoms
-    - notes
-safety_red_lines:
-  - 剧烈疼痛
-  - 异常出血
-  - 怀孕期间腹痛或出血
-  - 发热、晕厥或持续呕吐
-tests:
-  - name: period_prediction
-    input:
-      last_period_start: "2026-06-01"
-      pain_score: 3
-    expect:
-      status: pending_confirmation
+service: period-predictor
+action: predict_and_plan_care
+description: 记录经期数据、预测周期、痛感风险评估、养生提醒
+risk: high
+input:
+  last_period_start: date
+  symptoms: "string[]"
+  pain_score: "number [0-10]"
+  sleep_hours: number
+  basal_body_temperature: number
+confirm: 健康建议以记录和提醒为主，不可替代医生诊断
+redlines:
+  - 剧烈疼痛 → 强制提醒就医
+  - 异常出血 → 强制提醒就医
+  - 怀孕期间腹痛/出血 → 强制提醒就医
+  - 发热、晕厥或持续呕吐 → 强制提醒就医
+  - 系统不得输出诊断或治疗结论

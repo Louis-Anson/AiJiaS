@@ -1,0 +1,46 @@
+# ============================================================
+# Vaultwarden — 家庭密码管理器（Bitwarden 兼容）
+# 对外暴露 vault.relax.mycloudnas.com
+# 默认使用 SQLite，不依赖主 PostgreSQL，极省资源
+# ============================================================
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      # 域名（用于 WebSocket 和邀请链接）
+      - DOMAIN=https://vault.${DOMAIN_EXTERNAL}
+      # 允许注册（首次使用后建议关闭以防止公开注册）
+      - SIGNUPS_ALLOWED=${VAULT_SIGNUPS_ALLOWED:-true}
+      # 邀请功能
+      - INVITATIONS_ALLOWED=true
+      # 新用户默认组织（家庭共享密码用）
+      - SIGNUPS_VERIFY=false
+      # Admin 后台管理（访问 /admin 时使用此 Token 登录）
+      - ADMIN_TOKEN=${VAULT_ADMIN_TOKEN}
+      # 日志级别
+      - LOG_LEVEL=info
+      # WebSocket 支持（客户端实时同步需要）
+      - WEBSOCKET_ENABLED=true
+      # 禁用图标下载以减少对外请求（纯内网场景）
+      - DISABLE_ICON_DOWNLOAD=false
+      # 密码迭代次数（提高安全性，默认 600000）
+      # - PASSWORD_ITERATIONS=600000
+    volumes:
+      - /share/Container/vaultwarden/data:/data
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault.rule=Host(`vault.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.vault.entrypoints=websecure"
+      - "traefik.http.routers.vault.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vault.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true
+

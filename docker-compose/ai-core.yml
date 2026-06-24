@@ -50,6 +50,7 @@ services:
       - pgbouncer
     networks:
       - traefik-public
+      - internal
     labels:
       # --- Agent API: 公网 hermes.relax.mycloudnas.com ---
       - "traefik.enable=true"
@@ -82,6 +83,12 @@ services:
       # --- 4SAPI 中转站 (GPT / Claude / Gemini) ---
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_API_BASE=${OPENAI_API_BASE}
+      # --- Kimi 官方（care_warm，直连） ---
+      - KIMI_API_KEY=${KIMI_API_KEY}
+      # --- 智谱 AI 官方（daily_zh 负载均衡 + fast_aux，Beta 免费） ---
+      # --- OpenRouter（Nemotron 3 Ultra 免费兜底） ---
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
     volumes:
       - ./litellm-config.yaml:/app/config.yaml:ro
     depends_on:
@@ -89,6 +96,7 @@ services:
       - redis
     networks:
       - traefik-public
+      - internal
     labels:
       - "traefik.enable=false"
 
@@ -110,4 +118,7 @@ services:
 
 networks:
   traefik-public:
+    external: true
+
+  internal:
     external: true

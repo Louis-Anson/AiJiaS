@@ -1,0 +1,47 @@
+# 管理家庭水电煤费用（查询、记录、汇总、报告）
+# 国家电网 → 通过 HACS 集成 sgcc_electricity 自动拉取
+# 燃气/水费 → 无公开 API，由用户微信口述后系统记录到 Firefly
+
+skills:
+  # ----- 电费查询（HA sensor）-----
+  - id: utilities.check_electricity
+    name: 电费查询
+    service: home-assistant
+    action: get_sensor
+    description: 查询国家电网当前电量/电费（需安装 HACS sgcc_electricity 集成）
+    risk: low
+    input:
+      query_type: "enum[daily_usage, monthly_bill, year_bill, balance]*"
+    confirm: false
+    redlines: []
+
+  # ----- 燃气/水费记录（无 API，用户口述）-----
+  - id: utilities.record_bill
+    name: 水电煤记账
+    service: firefly
+    action: create_transaction
+    description: 记录水电煤缴纳金额（用户微信说"燃气费 85 块"时调用）
+    risk: low
+    input:
+      type: "enum[withdrawal]*"       # 固定 withdrawal
+      amount: "number*"
+      category_name: "enum[电费, 水费, 燃气费]*"
+      date: "date [today]"
+      notes: string
+    confirm: false
+    redlines:
+      - 金额 ≥ 500 元必须确认
+
+  # ----- 月度水电煤报告 -----
+  - id: utilities.monthly_report
+    name: 月度水电煤报告
+    service: firefly
+    action: query_transactions
+    description: 汇总本月水电煤支出，生成微信报告
+    risk: low
+    input:
+      start_date: "date [当月1日]"
+      end_date: "date [今天]"
+      categories: "enum[电费, 水费, 燃气费]"
+    confirm: false
+    redlines: []

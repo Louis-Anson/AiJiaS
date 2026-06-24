@@ -1,0 +1,23 @@
+# 家庭记账 — 通过 Firefly III 记录收支（复式记账）
+# Firefly API: POST /api/v1/transactions
+# 支出 = withdrawal，收入 = deposit，转账 = transfer
+# 金额、source 账户或分类低置信度时必须二次确认
+id: finance.create_transaction
+name: 家庭记账
+service: firefly
+action: create_transaction
+description: 记录家庭收支，支持支出/收入/转账，自动关联账户和分类
+risk: medium
+input:
+  type: "enum[withdrawal, deposit, transfer]*"
+  amount: "number*"
+  description: "string*"
+  date: "date [today]"
+  category_name: string
+  source_name: string
+  destination_name: string
+  notes: string
+confirm: 涉及账本写入；金额、分类或账户不明确时必须确认
+redlines:
+  - 不允许批量删除或修改已确认账目
+  - 金额 ≥ 5000 元必须确认

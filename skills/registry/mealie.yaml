@@ -1,0 +1,31 @@
+# 食材库存与菜谱 — 通过 Mealie API 管理家庭饮食
+# Mealie API: GET /api/foods（食材库存）、GET /api/recipes（菜谱搜索）
+# 读取操作无需确认；写入库存需升级风险
+
+skills:
+  - id: food.check_inventory
+    name: 食材库存查询
+    service: mealie
+    action: get_foods
+    description: 查询冰箱食材库存、临期食品、按分类筛选
+    risk: low
+    input:
+      search: string
+      category: string
+      expiring_before: date
+    confirm: false
+    redlines:
+      - 写入/更新食材库存需升级为 medium 风险并确认
+
+  - id: food.suggest_recipe
+    name: 菜谱建议
+    service: mealie
+    action: get_recipes
+    description: 根据现有食材推荐可制作的菜谱
+    risk: low
+    input:
+      ingredients: "string[]"
+      meal_type: string
+      tags: "string[]"
+    confirm: false
+    redlines: []
