@@ -9,7 +9,7 @@ services:
       - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=traefik-public"
+      - "--providers.docker.network=aijias-public"
       - "--providers.file.directory=/etc/traefik/dynamic"   # 新增：动态配置目录
       - "--providers.file.watch=true"                       # 新增：自动监听配置变更
       - "--entrypoints.web.address=:80"
@@ -28,7 +28,7 @@ services:
       - /share/Container/traefik/letsencrypt:/letsencrypt
       - /share/Container/traefik/dynamic:/etc/traefik/dynamic                    # 新增：挂载动态配置目录
     networks:
-      - traefik-public
+      - aijias-public
 
   traefik-manager:
     image: ghcr.io/chr0nzz/traefik-manager:latest
@@ -49,11 +49,11 @@ services:
       - /share/Container/traefik/dynamic:/config
       - /share/Container/traefik/manager-db:/data
     networks:
-      - traefik-public
+      - aijias-public
 
 networks:
-  traefik-public:
+  aijias-public:
     external: true
 
-  internal:
+  aijias-internal:
     external: true

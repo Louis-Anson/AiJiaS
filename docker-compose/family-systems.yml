@@ -17,7 +17,7 @@ services:
     volumes:
       - /share/Container/donetick/data:/donetick-data
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
@@ -41,8 +41,8 @@ services:
     depends_on:
       - postgres
     networks:
-      - traefik-public
-      - internal
+      - aijias-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -59,7 +59,7 @@ services:
       - /share/Container/homebox/data:/data
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
@@ -84,8 +84,8 @@ services:
     depends_on:
       - postgres
     networks:
-      - traefik-public
-      - internal
+      - aijias-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -103,15 +103,15 @@ services:
     depends_on:
       - postgres
     networks:
-      - traefik-public
-      - internal
+      - aijias-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
 networks:
-  traefik-public:
-      - internal
+  aijias-public:
+      - aijias-internal
     external: true
 
-  internal:
+  aijias-internal:
     external: true

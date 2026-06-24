@@ -18,7 +18,7 @@ services:
       - /share/Container/sillytavern/plugins:/home/node/app/plugins
       - /share/Container/sillytavern/extensions:/home/node/app/public/extensions
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sillytavern.rule=Host(`chat.${DOMAIN_EXTERNAL}`)"
@@ -27,8 +27,8 @@ services:
       - "traefik.http.services.sillytavern.loadbalancer.server.port=8000"
 
 networks:
-  traefik-public:
+  aijias-public:
     external: true
 
-  internal:
+  aijias-internal:
     external: true

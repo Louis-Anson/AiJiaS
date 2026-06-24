@@ -27,7 +27,7 @@ services:
       - /share/Container/postgres/data:/var/lib/postgresql/data
       - ../postgresql/init:/docker-entrypoint-initdb.d:ro
     networks:
-      - internal
+      - aijias-internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -62,7 +62,7 @@ services:
     volumes:
       - /share/Container/redis/data:/data
     networks:
-      - internal
+      - aijias-internal
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -92,7 +92,7 @@ services:
       MAX_CLIENT_CONN: 100
       IDLE_TIMEOUT: 600
     networks:
-      - internal
+      - aijias-internal
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,5 +112,6 @@ services:
         max-file: "3"
 
 networks:
-  internal:
+  aijias-internal:
+    external: true
     

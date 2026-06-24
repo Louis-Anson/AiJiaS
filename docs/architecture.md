@@ -151,14 +151,14 @@ flowchart TB
 
 ## Docker 网络拓扑（三层隔离）
 
-> 三层网络实现数据库隔离：`traefik-public` 对外路由、`internal` 主数据库专用、`immich-internal` Immich 内部专用。
+> 三层网络实现数据库隔离：`aijias-public` 对外路由、`aijias-internal` 主数据库专用、`aijias-immich` Immich 内部专用。
 
 ```mermaid
 flowchart TB
     subgraph Internet["🌐 公网"]
     end
 
-    subgraph TPublic["traefik-public — 路由层"]
+    subgraph TPublic["aijias-public — 路由层"]
         direction LR
         T["Traefik :443"] --> GW["hermes-agent :3000"]
         T --> IM["immich-server :2283"]
@@ -177,7 +177,7 @@ flowchart TB
         PB["PgBouncer :6432"]
     end
 
-    subgraph ImmichNet["immich-internal — 照片服务专属"]
+    subgraph ImmichNet["aijias-immich — 照片服务专属"]
         direction LR
         IPG["immich-postgres
 PG17+pgvector"]
@@ -222,11 +222,11 @@ LRU 临时队列"]
 
 | 网络 | 创建方式 | 成员 | 可以看到什么 |
 |------|---------|------|------------|
-| `traefik-public` | 手动 `docker network create` | Traefik + 需要对外暴露的服务 + 无 DB 依赖的轻量服务 | 所有同网络容器的端口 |
-| `internal` | `database.yml` 自动创建 | PostgreSQL、Redis、PgBouncer + 需要主 DB 的应用 | 主数据库端口 5432/6379/6432 |
-| `immich-internal` | `media.yml` 自动创建 | 仅 Immich 4 个容器（server、postgres、redis、ml） | Immich 专属数据库端口 |
+| `aijias-public` | 手动 `docker network create` | Traefik + 需要对外暴露的服务 + 无 DB 依赖的轻量服务 | 所有同网络容器的端口 |
+| `aijias-internal` | `database.yml` 自动创建 | PostgreSQL、Redis、PgBouncer + 需要主 DB 的应用 | 主数据库端口 5432/6379/6432 |
+| `aijias-immich` | `media.yml` 自动创建 | 仅 Immich 4 个容器（server、postgres、redis、ml） | Immich 专属数据库端口 |
 
-> **关键原则**：`immich-postgres` 不在 `internal` 网络中，主 PostgreSQL 不在 `immich-internal` 中，两者物理隔离。Immich 升级/崩溃不影响家庭账本和菜谱数据。
+> **关键原则**：`immich-postgres` 不在 `aijias-internal` 网络中，主 PostgreSQL 不在 `aijias-immich` 中，两者物理隔离。Immich 升级/崩溃不影响家庭账本和菜谱数据。
 
 ## 长期最佳架构
 

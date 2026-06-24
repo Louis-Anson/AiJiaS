@@ -23,13 +23,13 @@ services:
       - /share/Container/period-predictor/models:/models
       - /share/Container/period-predictor/rules:/rules:ro
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
 networks:
-  traefik-public:
+  aijias-public:
     external: true
 
-  internal:
+  aijias-internal:
     external: true

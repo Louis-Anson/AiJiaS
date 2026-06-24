@@ -21,7 +21,7 @@ services:
       - music_data:/app/downloads
       - /share/Container/go-music-dl/config:/app/config
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
@@ -43,7 +43,7 @@ services:
       - novel_data:/app/downloads
       - /share/Container/go-novel-dl/config:/app/config
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
@@ -60,7 +60,7 @@ services:
       - /share/Container/navidrome/data:/data
       - music_data:/music:ro
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
@@ -85,8 +85,8 @@ services:
       - immich-postgres
       - immich-machine-learning
     networks:
-      - traefik-public
-      - immich-internal
+      - aijias-public
+      - aijias-immich
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.immich.rule=Host(`immich.${DOMAIN_EXTERNAL}`)"
@@ -101,7 +101,7 @@ services:
     volumes:
       - immich_model_cache:/cache
     networks:
-      - immich-internal
+      - aijias-immich
     labels:
       - "traefik.enable=false"
 
@@ -111,7 +111,7 @@ services:
     restart: unless-stopped
     command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
     networks:
-      - immich-internal
+      - aijias-immich
     labels:
       - "traefik.enable=false"
 
@@ -127,7 +127,7 @@ services:
     volumes:
       - /share/Container/immich/postgres:/var/lib/postgresql/data
     networks:
-      - immich-internal
+      - aijias-immich
     labels:
       - "traefik.enable=false"
 
@@ -137,8 +137,9 @@ volumes:
   immich_model_cache:
 
 networks:
-  traefik-public:
+  aijias-public:
     external: true
 
-  immich-internal:
+  aijias-immich:
+    external: true
     

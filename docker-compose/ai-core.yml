@@ -49,8 +49,8 @@ services:
       - litellm
       - pgbouncer
     networks:
-      - traefik-public
-      - internal
+      - aijias-public
+      - aijias-internal
     labels:
       # --- Agent API: 公网 hermes.relax.mycloudnas.com ---
       - "traefik.enable=true"
@@ -95,8 +95,8 @@ services:
       - postgres
       - redis
     networks:
-      - traefik-public
-      - internal
+      - aijias-public
+      - aijias-internal
     labels:
       - "traefik.enable=false"
 
@@ -112,13 +112,13 @@ services:
       - /share/Container/ntfy/cache:/var/cache/ntfy
       - /share/Container/ntfy/etc:/etc/ntfy
     networks:
-      - traefik-public
+      - aijias-public
     labels:
       - "traefik.enable=false"
 
 networks:
-  traefik-public:
+  aijias-public:
     external: true
 
-  internal:
+  aijias-internal:
     external: true
