@@ -8,7 +8,6 @@ services:
   # ==================== 家务任务 (SQLite) ====================
   donetick:
     image: donetick/donetick:latest
-    container_name: donetick
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -24,7 +23,6 @@ services:
   # ==================== 菜谱管理 (主 PG) ====================
   mealie:
     image: ghcr.io/mealie-recipes/mealie:latest
-    container_name: mealie
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -49,7 +47,6 @@ services:
   # ==================== 物品 / 衣物管理 (SQLite) ====================
   homebox:
     image: sysadminsmedia/homebox:latest
-    container_name: homebox
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -66,7 +63,6 @@ services:
   # ==================== 家庭记账 Firefly III (主 PG) ====================
   firefly:
     image: fireflyiii/core:latest
-    container_name: firefly
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -92,7 +88,6 @@ services:
   # ==================== 车辆保养 LubeLogger (主 PG) ====================
   lubelogger:
     image: ghcr.io/hargata/lubelogger:latest
-    container_name: lubelogger
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -110,7 +105,6 @@ services:
 
 networks:
   aijias-public:
-      - aijias-internal
     external: true
 
   aijias-internal:

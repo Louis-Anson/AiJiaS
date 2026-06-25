@@ -9,7 +9,6 @@ services:
   # ==================== 女性健康预测服务 ====================
   period-predictor:
     image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
-    container_name: period-predictor
     restart: unless-stopped
     profiles:
       - health

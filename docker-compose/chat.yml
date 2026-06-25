@@ -5,7 +5,6 @@
 services:
   sillytavern:
     image: ghcr.io/sillytavern/sillytavern:latest
-    container_name: sillytavern
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai

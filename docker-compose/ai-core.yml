@@ -8,7 +8,6 @@ services:
   # ==================== Hermes AI 管家 + Dashboard (agent 3000 + dashboard 9119 同容器) ====================
   hermes-agent:
     image: nousresearch/hermes-agent:latest
-    container_name: hermes-agent
     restart: unless-stopped
     profiles:
       - agent
@@ -67,7 +66,6 @@ services:
   # ==================== LiteLLM 模型中继 (内网) ====================
   litellm:
     image: docker.litellm.ai/berriai/litellm:main-stable
-    container_name: litellm
     restart: unless-stopped
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
@@ -103,7 +101,6 @@ services:
   # ==================== ntfy 通知服务 (内网) ====================
   ntfy:
     image: binwiederhier/ntfy:latest
-    container_name: ntfy
     restart: unless-stopped
     command: serve
     environment:

@@ -4,7 +4,6 @@ services:
   # ==================== 音乐下载与搜刮 ====================
   go-music-dl:
     image: guohuiyuan/go-music-dl:latest
-    container_name: go-music-dl
     restart: unless-stopped
     command:
       - "./music-dl"
@@ -32,7 +31,6 @@ services:
   # ==================== 小说下载与搜刮 ====================
   go-novel-dl:
     image: guohuiyuan/go-novel-dl:latest
-    container_name: go-novel-dl
     restart: unless-stopped
     command:
       - "./novel-dl"
@@ -58,7 +56,6 @@ services:
   # ==================== 私人音乐服务器 ====================
   navidrome:
     image: deluan/navidrome:latest
-    container_name: navidrome
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -78,7 +75,6 @@ services:
   # ==================== 照片备份管理 — Immich (对外暴露) ====================
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
-    container_name: immich-server
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -107,7 +103,6 @@ services:
 
   immich-machine-learning:
     image: ghcr.io/immich-app/immich-machine-learning:release
-    container_name: immich-machine-learning
     restart: unless-stopped
     volumes:
       - immich_model_cache:/cache
@@ -118,7 +113,6 @@ services:
 
   immich-redis:
     image: docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
-    container_name: immich-redis
     restart: unless-stopped
     healthcheck:
       test: redis-cli ping || exit 1
@@ -132,7 +126,6 @@ services:
 
   immich-postgres:
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
-    container_name: immich-postgres
     shm_size: 128mb
     restart: unless-stopped
     environment:

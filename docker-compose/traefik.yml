@@ -3,7 +3,6 @@ version: "3.9"
 services:
   traefik:
     image: traefik:v3.6
-    container_name: traefik
     restart: unless-stopped
     command:
       - "--api.dashboard=true"
@@ -32,7 +31,6 @@ services:
 
   traefik-manager:
     image: ghcr.io/chr0nzz/traefik-manager:latest
-    container_name: traefik-manager
     restart: unless-stopped
     depends_on:
       - traefik
