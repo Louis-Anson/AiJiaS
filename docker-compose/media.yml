@@ -10,10 +10,6 @@ services:
       - "web"
       - "--port=8080"
       - "--no-browser"
-      - "--vg-cover"
-      - "--vg-audio"
-      - "--vg-lyric"
-      - "--vg-export"
     environment:
       - TZ=Asia/Shanghai
     volumes:
@@ -37,8 +33,6 @@ services:
       - "web"
       - "--port=8080"
       - "--no-browser"
-      - "--export-txt"
-      - "--export-epub"
     environment:
       - TZ=Asia/Shanghai
     volumes:

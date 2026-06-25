@@ -13,6 +13,7 @@ services:
       - TZ=Asia/Shanghai
       - DT_ENV=selfhosted
       - DT_SQLITE_PATH=/donetick-data/donetick.db
+      - DT_JWT_SECRET=${DT_JWT_SECRET}
     volumes:
       - /File/Container/donetick/data:/donetick-data
     networks:
@@ -52,6 +53,7 @@ services:
       - TZ=Asia/Shanghai
       - HBOX_LOG_LEVEL=info
       - HBOX_ALLOW_REGISTRATION=false
+      - HBOX_AUTH_API_KEY_PEPPER=${HBOX...ER}
     volumes:
       - /File/Container/homebox/data:/data
       - /etc/localtime:/etc/localtime:ro
