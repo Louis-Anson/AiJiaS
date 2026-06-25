@@ -18,12 +18,16 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - music_data:/app/downloads
+      - /share/Container/go-music-dl/music:/app/downloads
       - /share/Container/go-music-dl/config:/app/config
     networks:
       - aijias-public
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.musicdl.rule=Host(`musicdl.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.musicdl.entrypoints=websecure"
+      - "traefik.http.routers.musicdl.tls.certresolver=letsencrypt"
+      - "traefik.http.services.musicdl.loadbalancer.server.port=8080"
 
   # ==================== 小说下载与搜刮 ====================
   go-novel-dl:
@@ -40,12 +44,16 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - novel_data:/app/downloads
+      - /share/Container/go-novel-dl/novels:/app/downloads
       - /share/Container/go-novel-dl/config:/app/config
     networks:
       - aijias-public
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.noveldl.rule=Host(`novel.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.noveldl.entrypoints=websecure"
+      - "traefik.http.routers.noveldl.tls.certresolver=letsencrypt"
+      - "traefik.http.services.noveldl.loadbalancer.server.port=8080"
 
   # ==================== 私人音乐服务器 ====================
   navidrome:
@@ -58,12 +66,15 @@ services:
       - ND_LOGLEVEL=info
     volumes:
       - /share/Container/navidrome/data:/data
-      - music_data:/music:ro
+      - /share/Container/go-music-dl/music:/music:ro
     networks:
       - aijias-public
     labels:
-      - "traefik.enable=false"
-
+      - "traefik.enable=true"
+      - "traefik.http.routers.music.rule=Host(`music.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.music.entrypoints=websecure"
+      - "traefik.http.routers.music.tls.certresolver=letsencrypt"
+      - "traefik.http.services.music.loadbalancer.server.port=4533"
   # ==================== 照片备份管理 — Immich (对外暴露) ====================
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
@@ -106,18 +117,23 @@ services:
       - "traefik.enable=false"
 
   immich-redis:
-    image: redis:8.6-alpine
+    image: docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
     container_name: immich-redis
     restart: unless-stopped
-    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: redis-cli ping || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - aijias-immich
     labels:
       - "traefik.enable=false"
 
   immich-postgres:
-    image: ghcr.io/immich-app/postgres:17-vectorchord0.4.2-pgvector0.8.0-pgvectors0.3.0
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
     container_name: immich-postgres
+    shm_size: 128mb
     restart: unless-stopped
     environment:
       - POSTGRES_USER=${IMMICH_DB_USER}
@@ -132,10 +148,7 @@ services:
       - "traefik.enable=false"
 
 volumes:
-  music_data:
-  novel_data:
   immich_model_cache:
-
 networks:
   aijias-public:
     external: true
