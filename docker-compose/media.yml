@@ -17,8 +17,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /share/Container/go-music-dl/music:/app/downloads
-      - /share/Container/go-music-dl/config:/app/config
+      - /Media/Container/go-music-dl/music:/app/downloads
+      - /File/Container/go-music-dl/config:/app/config
     networks:
       - aijias-public
     labels:
@@ -42,8 +42,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /share/Container/go-novel-dl/novels:/app/downloads
-      - /share/Container/go-novel-dl/config:/app/config
+      - /Media/Container/go-novel-dl/novels:/app/downloads
+      - /File/Container/go-novel-dl/config:/app/config
     networks:
       - aijias-public
     labels:
@@ -62,8 +62,8 @@ services:
       - ND_SCANSCHEDULE=1h
       - ND_LOGLEVEL=info
     volumes:
-      - /share/Container/navidrome/data:/data
-      - /share/Container/go-music-dl/music:/music:ro
+      - /Media/Container/navidrome/data:/data
+      - /Media/Container/go-music-dl/music:/music:ro
     networks:
       - aijias-public
     labels:
@@ -85,7 +85,7 @@ services:
       - REDIS_HOSTNAME=immich-redis
       - IMMICH_MACHINE_LEARNING_URL=http://immich-machine-learning:3003
     volumes:
-      - /share/Container/immich/upload:/usr/src/app/upload
+      - /Media/Container/immich/upload:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich-redis

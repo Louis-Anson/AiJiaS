@@ -106,8 +106,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /share/Container/ntfy/cache:/var/cache/ntfy
-      - /share/Container/ntfy/etc:/etc/ntfy
+      - /File/Container/ntfy/cache:/var/cache/ntfy
+      - /File/Container/ntfy/etc:/etc/ntfy
     networks:
       - aijias-public
     labels:

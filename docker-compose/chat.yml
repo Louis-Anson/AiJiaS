@@ -12,10 +12,10 @@ services:
       - SILVERLEGACY_LISTENING=true
       - SILVERLEGACY_PORT=8000
     volumes:
-      - /share/Container/sillytavern/data:/home/node/app/data
-      - /share/Container/sillytavern/config:/home/node/app/config
-      - /share/Container/sillytavern/plugins:/home/node/app/plugins
-      - /share/Container/sillytavern/extensions:/home/node/app/public/extensions
+      - /File/Container/sillytavern/data:/home/node/app/data
+      - /File/Container/sillytavern/config:/home/node/app/config
+      - /File/Container/sillytavern/plugins:/home/node/app/plugins
+      - /File/Container/sillytavern/extensions:/home/node/app/public/extensions
     networks:
       - aijias-public
     labels:

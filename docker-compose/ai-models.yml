@@ -19,8 +19,8 @@ services:
       - MODEL_DIR=/models
       - RULESET_DIR=/rules
     volumes:
-      - /share/Container/period-predictor/models:/models
-      - /share/Container/period-predictor/rules:/rules:ro
+      - /File/Container/period-predictor/models:/models
+      - /File/Container/period-predictor/rules:/rules:ro
     networks:
       - aijias-public
     labels:
