@@ -22,6 +22,7 @@ echo "FIREFLY_APP_KEY=$(openssl rand -base64 32)"
 echo "MEALIE_DB_PASSWORD=$(openssl rand -base64 16)"
 echo "LUBELOGGER_DB_PASSWORD=$(openssl rand -base64 16)"
 echo "IMMICH_DB_PASSWORD=$(openssl rand -base64 16)"
+echo "HBOX_AUTH_API_KEY_PEPPER=$(openssl rand -base64 48)"
 echo ""
 
 echo "# ========== Vaultwarden =========="

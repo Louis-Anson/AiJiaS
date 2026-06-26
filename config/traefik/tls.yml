@@ -1,0 +1,16 @@
+# Traefik TLS configuration — uses QNAP's myQNAPcloud Let's Encrypt certificate
+# QNAP auto-renews certificates via its own Let's Encrypt client.
+# Traefik reads them from the mounted host directory.
+#
+# If QNAP renews the certificate, Traefik will pick up the new files
+# automatically because file.watch=true is enabled.
+
+tls:
+  certificates:
+    - certFile: /certs/backup.cert
+      keyFile: /certs/backup.key
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/backup.cert
+        keyFile: /certs/backup.key

@@ -55,7 +55,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.hermes.rule=Host(`hermes.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.hermes.entrypoints=websecure"
-      - "traefik.http.routers.hermes.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.hermes.tls=true"
       - "traefik.http.services.hermes.loadbalancer.server.port=3000"
       # --- Dashboard WebUI: 内网 hermes-ui.relax.local (同容器, 端口 9119) ---
       - "traefik.http.routers.hermes-ui.rule=Host(`hermes-ui.${DOMAIN_INTERNAL}`)"
@@ -88,7 +88,7 @@ services:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - ZHIPU_API_KEY=${ZHIPU_API_KEY}
     volumes:
-      - ./litellm-config.yaml:/app/config.yaml:ro
+      - ../config/litellm/litellm-config.yaml:/app/config.yaml:ro
     depends_on:
       - postgres
       - redis

@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sillytavern.rule=Host(`chat.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.sillytavern.entrypoints=websecure"
-      - "traefik.http.routers.sillytavern.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.sillytavern.tls=true"
       - "traefik.http.services.sillytavern.loadbalancer.server.port=8000"
 
 networks:

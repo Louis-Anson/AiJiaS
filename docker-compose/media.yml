@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   # ==================== 音乐下载与搜刮 ====================
@@ -21,7 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.musicdl.rule=Host(`musicdl.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.musicdl.entrypoints=websecure"
-      - "traefik.http.routers.musicdl.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.musicdl.tls=true"
       - "traefik.http.services.musicdl.loadbalancer.server.port=8080"
 
   # ==================== 小说下载与搜刮 ====================
@@ -44,7 +43,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.noveldl.rule=Host(`novel.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.noveldl.entrypoints=websecure"
-      - "traefik.http.routers.noveldl.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.noveldl.tls=true"
       - "traefik.http.services.noveldl.loadbalancer.server.port=8080"
 
   # ==================== 私人音乐服务器 ====================
@@ -64,7 +63,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.music.rule=Host(`music.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.music.entrypoints=websecure"
-      - "traefik.http.routers.music.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.music.tls=true"
       - "traefik.http.services.music.loadbalancer.server.port=4533"
   # ==================== 照片备份管理 — Immich (对外暴露) ====================
   immich-server:
@@ -92,7 +91,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.immich.rule=Host(`immich.${DOMAIN_EXTERNAL}`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
-      - "traefik.http.routers.immich.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.immich.tls=true"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
 
   immich-machine-learning:

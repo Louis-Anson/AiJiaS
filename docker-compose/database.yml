@@ -24,7 +24,7 @@ services:
       -c maintenance_work_mem=64MB
     volumes:
       - /share/Container/postgres/data:/var/lib/postgresql/data
-      - ../postgresql/init:/docker-entrypoint-initdb.d:ro
+      - ../config/postgresql/init:/docker-entrypoint-initdb.d:ro
     networks:
       - aijias-internal
     healthcheck:
