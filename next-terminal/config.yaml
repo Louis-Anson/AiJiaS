@@ -1,17 +1,24 @@
 # Next Terminal — 数据库连接
-# 通过主机 IP 连接 AiJiaS 的 PostgreSQL
+# 连接主 PostgreSQL（AiJiaS 共享数据库），使用 host 网络模式直连
+# 密码由 docker-compose 的 NT_DATABASE_URL 环境变量覆盖
 
 Database:
   Enabled: true
   Type: postgres
   Postgres:
-    Hostname: 192.168.3.195
+    Hostname: 127.0.0.1
     Port: 5432
     Username: next-terminal
-    Password: your_n...n
-# SSH Server — 绑定内网 IP 的 2022 端口
+    Password: next-terminal
+    Database: next-terminal
+  ShowSql: false
+
+log:
+  Level: debug
+  Filename: ./logs/nt.log
+
 Server:
-  Addr: "192.168.3.195:8088"
+  Addr: "0.0.0.0:8088"
 
 App:
   Website:
@@ -21,9 +28,12 @@ App:
     Path: "/usr/local/next-terminal/data/recordings"
   Guacd:
     Drive: "/usr/local/next-terminal/data/drive"
-    Hosts:                          # 不用 RDP/VNC，可以删掉或留空
+    Hosts:
+      - Hostname: 127.0.0.1
+        Port: 4822
+        Weight: 1
   ReverseProxy:
-    Enabled: false                  # Traefik 已经处理了，关掉内置的
+    Enabled: false                  # Traefik 已处理反向代理
     SelfProxyEnabled: false
     HttpEnabled: false
     HttpsEnabled: false

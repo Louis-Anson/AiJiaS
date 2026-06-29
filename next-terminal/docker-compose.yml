@@ -1,12 +1,26 @@
 # Next Terminal — 内网跳板机 / Web SSH
 # 使用主机网络，连接主 PostgreSQL，Traefik 通过 terminal.relax.mycloudnas.com 路由
+# guacd 为 RDP/VNC 连接提供代理
 
 services:
+  guacd:
+    image: dushixiang/guacd:latest
+    container_name: guacd
+    restart: always
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
   next-terminal:
     image: dushixiang/next-terminal:latest
     container_name: next-terminal
     restart: always
     network_mode: host
+    depends_on:
+      - guacd
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /File/Container/next-terminal/data:/usr/local/next-terminal/data
