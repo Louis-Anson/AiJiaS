@@ -1,0 +1,24 @@
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - SIGNUPS_ALLOWED=${VAULT_SIGNUPS_ALLOWED}
+      - SIGNUPS_VERIFY=false
+      - ADMIN_TOKEN=***      - DOMAIN=https://vault.${DOMAIN_EXTERNAL}
+      - DISABLE_ICON_DOWNLOAD=false
+    volumes:
+      - /share/Container/vaultwarden/data:/data
+    networks:
+      - home-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault.rule=Host(`vault.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.vault.entrypoints=websecure"
+      - "traefik.http.routers.vault.tls=true"
+      - "traefik.http.services.vault.loadbalancer.server.port=80"
+
+
+networks:
+  home-public:
+    external: true

@@ -6,7 +6,7 @@
 services:
   # ==================== 家务任务 ====================
   donetick:
-    image: donetick:beta
+    image: donetick/donetick:latest
     restart: unless-stopped
     ports:
       - "2021:2021"
@@ -88,7 +88,7 @@ services:
 
   # ==================== 车辆保养 ====================
   lubelogger:
-    image: hargata/lubelogger:latest
+    image: ghcr.io/hargata/lubelogger:latest
     restart: unless-stopped
     ports:
       - "8089:8080"
