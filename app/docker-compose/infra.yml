@@ -26,7 +26,7 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
-      - SIGNUPS_ALLOWED=${VAU...ED}
+      - SIGNUPS_ALLOWED=${VAULT_SIGNUPS_ALLOWED}
       - SIGNUPS_VERIFY=false
       - ADMIN_TOKEN=***      - DOMAIN=https://vault.${DOMAIN_EXTERNAL}
       - DISABLE_ICON_DOWNLOAD=false
