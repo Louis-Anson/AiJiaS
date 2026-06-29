@@ -1,13 +1,22 @@
+# ============================================================
+# Traefik — 全屋反向代理
+# 独立项目，为所有内网服务提供 HTTPS 入口
+# 网络：home-public（所有需要路由的服务加入此网络）
+# ============================================================
 
 services:
   traefik:
     image: traefik:v3.6
+    container_name: traefik
     restart: unless-stopped
+    environment:
+      - HERMES_IP=${HERMES_IP}
     command:
       - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=aijias-public"
+      - "--providers.docker.network=home-public"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
@@ -17,15 +26,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/stunnel:/certs:ro
       - /File/Container/traefik/dynamic:/etc/traefik/dynamic
     networks:
-      - aijias-public
+      - home-public
 
   traefik-manager:
     image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
     restart: unless-stopped
     depends_on:
       - traefik
@@ -33,20 +44,21 @@ services:
       - TRAEFIK_API_URL=http://traefik:8080
       - CONFIG_DIR=/config
       - TZ=Asia/Shanghai
-      # 管理员账号密码（admin / 请修改你的密码）
       - ADMIN_USER=louis
-      - ADMIN_PASSWORD_HASH=$2y$10$XHxrPeSCmy6cj8sIybTGouGZ5L79FWQtstQtLqW5nOX7kwCZvty6u% 
+      - ADMIN_PASSWORD_HASH=${TRAEFIK_MANAGER_PASSWORD_HASH}
     ports:
       - "8081:8081"
     volumes:
       - /File/Container/traefik/dynamic:/config
       - /File/Container/traefik/manager-db:/data
     networks:
-      - aijias-public
+      - home-public
 
 networks:
-  aijias-public:
-    external: true
-
-  aijias-internal:
-    external: true
+  home-public:
+    name: home-public
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1

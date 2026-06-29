@@ -1,0 +1,273 @@
+# ============================================================
+# LiteLLM 模型路由配置 — AiJiaS 家庭场景
+# ============================================================
+# 供应商：
+#   1. DeepSeek 官方 API (直连) — V4 Flash / V4 Pro（1M 上下文，支持 thinking + tool call）
+#   2. 智谱 AI 官方 (直连) — GLM-4.7-Flash（免费 200K）/ GLM-4.5-Air（免费 128K）/ GLM-5.2（旗舰推理）
+#   3. Kimi 官方 (直连) — K2.6（256K 上下文，多模态）
+#   4. 4SAPI 中转站 — Claude Opus / Sonnet / GPT · OpenRouter — Nemotron 3 Ultra（免费）
+#
+# 模型槽位设计：
+#   daily_zh      → 日常中文对话（三路负载均衡，最便宜）
+#   tool_strict   → 工具/函数调用（V4 Flash 低延迟 + schema 遵循好）
+#   planner       → 任务规划与总结（V4 Pro 强推理）
+#   deep_reasoner → 复杂推理（Opus 4.8，低频调用）
+#   opus_think    → 深度推理 + 思考链（Opus 4.8 thinking，仅必要时触发）
+#   care_warm     → 家庭关怀（Kimi K2.6 中文共情最好）
+#   fast_aux      → 辅助任务（GLM-4.7-Flash 免费）
+#   skill_evolver → 技能进化（V4 Flash 最便宜批处理）
+#
+# 月估算成本：¥12–20
+#   daily_zh ¥2–4 | tool ¥1–2 | planner ¥2–4 | opus ¥4–5 | care ¥1–3
+# ============================================================
+
+model_list:
+  # ==================== 核心槽位 ====================
+
+  # --- 日常对话：三路负载均衡 ---
+  # 场景：微信闲聊、简单查询、日常问答、闲聊陪伴
+  # DeepSeek V4 Flash 直连（$0.14/1M 输入）+ GLM-4.7-Flash 免费（200K）+ GLM-4.5-Air 免费（128K）
+  # 任一宕机不影响，simple-shuffle 轮询分担
+  - model_name: daily_zh
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+  - model_name: daily_zh
+    litellm_params:
+      model: openai/glm-4.7-flash
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+  - model_name: daily_zh
+    litellm_params:
+      model: openai/glm-4.5-air
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  # --- 工具调用：低延迟 + 高准确度 ---
+  # 场景：调用家庭服务 API、创建任务、记账、查询库存
+  # 用 V4 Flash 而非 V4 Pro 的理由：
+  #   - V4 Flash 支持 tool calls，直连延迟更低
+  #   - 直连延迟 ~300ms，走中转站 ~800ms
+  #   - 中文理解好，减少参数抽取错误
+  - model_name: tool_strict
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # --- 规划与总结：V4 Pro 推理模型 ---
+  # 场景：任务拆解、周报总结、家庭分析、技能发现、长期趋势
+  # V4 Pro 的强项是 CoT 推理和逻辑分析，正好是 planner 需要的
+  - model_name: planner
+    litellm_params:
+      model: deepseek/deepseek-v4-pro
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # --- 深度推理：Opus 4.8 普通模式 ---
+  # 场景：复杂决策、健康分析、多步骤推理
+  # 走 4SAPI 中转站（¥5/1M 输入，¥25/1M 输出）
+  # 月 ~40 次调用，成本 ¥4–5
+  # 4SAPI 模型名不带前缀（API 文档：https://4sapi.apifox.cn/8594004m0）
+  - model_name: deep_reasoner
+    litellm_params:
+      model: claude-opus-4.8
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  # --- 深度推理 + 思考链：Opus 4.8 thinking 模式 ---
+  # 场景：健康风险评估、长期趋势分析等需要深度推理链的场景
+  # 价格是普通版的 ~6 倍（¥27.5 输入 / ¥137.5 输出）
+  # 仅在 Hermes Agent 显式请求时触发，不作为默认
+  # Hermes 调用时传 extra_body={"thinking": {"type": "enabled", "budget_tokens": 4096}}
+  - model_name: opus_think
+    litellm_params:
+      model: claude-opus-4.8-thinking
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  # --- 家庭关怀：Kimi K2.6 官方直连 ---
+  # 场景：关怀提醒、情绪安抚、经期提醒、伴侣分担建议
+  # 官方价格 ¥6.50/¥27.00 per 1M（缓存命中 ¥1.10）
+  # 直连延迟更低，中文情感表达最自然
+  - model_name: care_warm
+    litellm_params:
+      model: openai/kimi-k2.6
+      api_key: os.environ/KIMI_API_KEY
+      api_base: https://api.moonshot.cn/v1
+
+  # ==================== 辅助槽位 ====================
+
+  # --- 快速辅助：标题生成、上下文压缩、简单分类 ---
+  # 场景：对话标题、长上下文压缩、意图分类
+  # GLM-4.7-Flash 免费（200K 上下文），中文辅助任务够用
+  - model_name: fast_aux
+    litellm_params:
+      model: openai/glm-4.7-flash
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  # --- 技能进化：离线批处理，最便宜 ---
+  # 场景：从使用日志中总结技能草案、生成测试用例
+  # V4 Flash $0.14/1M 输入，直连不走中转，批处理场景最合适
+  - model_name: skill_evolver
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # ==================== Fallback 槽位 ====================
+
+  # --- tool_strict 的 fallback：工具调用能力强 ---
+  - model_name: tool_fb
+    litellm_params:
+      model: claude-sonnet-4.6
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  # --- planner 的 fallback：GLM 5.2 旗舰推理（智谱直连） ---
+  - model_name: planner_fb
+    litellm_params:
+      model: openai/glm-5.2
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  # --- 免费兜底：OpenRouter Nemotron 3 Ultra（免费） ---
+  - model_name: free_fallback
+    litellm_params:
+      model: nvidia/nemotron-3-ultra-550b-a55b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+  # ==================== 独立可选模型（用户手动选择，非 Hermes 槽位） ====================
+
+  # --- DeepSeek ---
+  - model_name: deepseek-v4-flash
+    litellm_params:
+      model: deepseek/deepseek-v4-flash
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  - model_name: deepseek-v4-pro
+    litellm_params:
+      model: deepseek/deepseek-v4-pro
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # --- Kimi ---
+  - model_name: kimi-k2.6
+    litellm_params:
+      model: openai/kimi-k2.6
+      api_key: os.environ/KIMI_API_KEY
+      api_base: https://api.moonshot.cn/v1
+
+  # --- 智谱 GLM ---
+  - model_name: glm-5.2
+    litellm_params:
+      model: openai/glm-5.2
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  - model_name: glm-4.7-flash
+    litellm_params:
+      model: openai/glm-4.7-flash
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  - model_name: glm-4.5-air
+    litellm_params:
+      model: openai/glm-4.5-air
+      api_key: os.environ/ZHIPU_API_KEY
+      api_base: https://open.bigmodel.cn/api/paas/v4
+
+  # --- 4SAPI 中转站 ---
+  # 不设的话 LiteLLM 会按 Anthropic 官方 $15/$75 计算，严重失真
+  - model_name: claude-opus-4.8
+    litellm_params:
+      model: claude-opus-4.8
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  - model_name: claude-opus-4.8-thinking
+    litellm_params:
+      model: claude-opus-4.8-thinking
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  - model_name: claude-sonnet-4.6
+    litellm_params:
+      model: claude-sonnet-4.6
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  - model_name: gpt-5.5
+    litellm_params:
+      model: gpt-5.5
+      api_key: os.environ/OPENAI_API_KEY
+      api_base: os.environ/OPENAI_API_BASE
+
+  # --- 小米 MiMo ---
+  - model_name: mimo-v2.5
+    litellm_params:
+      model: openai/mimo-v2.5
+      api_key: os.environ/MIMO_API_KEY
+      api_base: https://api.xiaomimimo.com/v1
+
+  # --- OpenRouter 免费兜底 ---
+  - model_name: nemotron-3-ultra
+    litellm_params:
+      model: nvidia/nemotron-3-ultra-550b-a55b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+# ============================================================
+# 路由与 Fallback 设置
+# ============================================================
+router_settings:
+  redis_host: 192.168.3.195
+  redis_port: 6379
+  redis_password: os.environ/REDIS_PASSWORD
+  # Fallback 链：主模型失败时自动降级
+  # 设计原则：同级强模型先顶上，最后才是免费兜底
+  fallbacks:
+    - daily_zh:
+        - care_warm           # GLM 全挂了 → Kimi（中文好）
+        - free_fallback       # 最后防线
+    - tool_strict:
+        - tool_fb             # V4 Flash 挂了 → Sonnet 4.6（工具调用最强）
+        - daily_zh            # Sonnet 也挂了 → 三路 GLM/DS
+        - free_fallback
+    - planner:
+        - planner_fb          # V4 Pro 挂了 → GLM 5.2（智谱旗舰推理）
+        - deep_reasoner       # GLM 5.2 也挂了 → Opus 4.8
+        - daily_zh
+    - deep_reasoner:
+        - planner             # Opus 挂了 → V4 Pro（推理能力接近）
+        - daily_zh
+    - care_warm:
+        - daily_zh            # Kimi 挂了 → GLM/DS（至少中文）
+        - free_fallback
+  # 超时与重试
+  num_retries: 2
+  request_timeout: 60
+  allowed_fails: 3
+  # 负载均衡：同一 model_name 多个后端时轮询
+  routing_strategy: simple-shuffle
+
+# ============================================================
+# 通用设置
+# ============================================================
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+
+# ============================================================
+# 缓存设置
+# ============================================================
+# LiteLLM 级缓存（Redis）：缓存 LLM 响应，相同 prompt 不重复调用
+# DeepSeek / Claude Prompt Caching：系统提示 + 工具 schema 自动缓存
+#   - DeepSeek V4 Flash 缓存命中 $0.0028/1M（节省 98%）· Opus 缓存命中 ¥0.5/1M（节省 90%）
+#   - Hermes Agent 系统提示 + 工具 schema 每次调用都重复，缓存价值极大
+litellm_settings:
+  cache: true
+  cache_params:
+    type: redis
+    host: redis
+    port: 6379
+    password: os.environ/REDIS_PASSWORD
+  # 丢弃不支持的参数（如某些模型不支持 temperature）
+  drop_params: true
+  set_verbose: false

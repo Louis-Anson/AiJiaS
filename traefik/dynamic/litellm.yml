@@ -1,0 +1,20 @@
+# LiteLLM — 大模型 API 路由，公网可访问（带鉴权）
+http:
+  routers:
+    llm:
+      rule: "Host(`llm.relax.mycloudnas.com`)"
+      entrypoints: websecure
+      tls: true
+      service: litellm
+
+    llm-api:
+      rule: "Host(`llm.relax.mycloudnas.com`) && PathPrefix(`/v1`)"
+      entrypoints: websecure
+      tls: true
+      service: litellm
+
+  services:
+    litellm:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.3.195:4000"

@@ -1,14 +1,16 @@
 # ============================================================
-# 家庭业务系统 — 全部内网访问 (relax.local)
-# Donetick / Mealie / Homebox / Firefly III / LubeLogger
-# 全部连接主 PostgreSQL (database.yml), 不再单独起 PG 容器
+# AiJiaS Core — 家庭 AI 经常控制的业务服务
+# Hermes Agent 通过家庭管家 Profile 直接调 API 管理这些服务
 # ============================================================
 
 services:
-  # ==================== 家务任务 (SQLite) ====================
+  # ==================== 家务任务 ====================
   donetick:
-    image: donetick/donetick:latest
+    image: donetick:beta
+    container_name: donetick
     restart: unless-stopped
+    ports:
+      - "2021:2021"
     environment:
       - TZ=Asia/Shanghai
       - DT_ENV=selfhosted
@@ -17,97 +19,118 @@ services:
     volumes:
       - /File/Container/donetick/data:/donetick-data
     networks:
-      - aijias-public
+      - home-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 菜谱管理 (主 PG) ====================
+  # ==================== 菜谱与食材 ====================
   mealie:
     image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
     restart: unless-stopped
+    ports:
+      - "9000:9000"
     environment:
       - TZ=Asia/Shanghai
       - ALLOW_SIGNUP=false
-      - BASE_URL=http://mealie.${DOMAIN_INTERNAL}
       - DB_ENGINE=postgres
+      - POSTGRES_SERVER=192.168.3.195
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=mealie
       - POSTGRES_PASSWORD=${MEALIE_DB_PASSWORD}
-      - POSTGRES_SERVER=postgres
-      - POSTGRES_PORT=5432
       - POSTGRES_DB=mealie
     volumes:
       - /File/Container/mealie/data:/app/data
-    depends_on:
-      - postgres
     networks:
-      - aijias-public
-      - aijias-internal
+      - home-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 物品 / 衣物管理 (SQLite) ====================
+  # ==================== 物品管理 ====================
   homebox:
     image: sysadminsmedia/homebox:latest
+    container_name: homebox
     restart: unless-stopped
+    ports:
+      - "7745:7745"
     environment:
       - TZ=Asia/Shanghai
       - HBOX_LOG_LEVEL=info
       - HBOX_ALLOW_REGISTRATION=false
-      - HBOX_AUTH_API_KEY_PEPPER=${HBOX_AUTH_API_KEY_PEPPER}
+      - HBOX_AUTH_API_KEY_PEPPER=${HBOX...R}
     volumes:
       - /File/Container/homebox/data:/data
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - aijias-public
+      - home-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 家庭记账 Firefly III (主 PG) ====================
+  # ==================== 家庭记账 ====================
   firefly:
     image: fireflyiii/core:latest
+    container_name: firefly
     restart: unless-stopped
+    ports:
+      - "8088:8080"
     environment:
       - TZ=Asia/Shanghai
       - APP_KEY=${FIREFLY_APP_KEY}
       - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
+      - DB_HOST=192.168.3.195
       - DB_PORT=5432
       - DB_DATABASE=firefly
       - DB_USERNAME=firefly
       - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
-      - APP_URL=http://firefly.${DOMAIN_INTERNAL}
-      - TRUSTED_PROXIES=**
+      - APP_URL=http://firefly:8080
     volumes:
       - /File/Container/firefly/data:/var/www/html/storage/upload
-    depends_on:
-      - postgres
     networks:
-      - aijias-public
-      - aijias-internal
+      - home-public
     labels:
       - "traefik.enable=false"
 
-  # ==================== 车辆保养 LubeLogger (主 PG) ====================
+  # ==================== 车辆保养 ====================
   lubelogger:
-    image: ghcr.io/hargata/lubelogger:latest
+    image: hargata/lubelogger:latest
+    container_name: lubelogger
     restart: unless-stopped
+    ports:
+      - "8089:8080"
     environment:
       - TZ=Asia/Shanghai
-      - POSTGRES_CONNECTION=Host=postgres:5432;Username=lubelogger;Password=${LUBELOGGER_DB_PASSWORD};Database=lubelogger;
+      - LUBELOGGER_DB_PROVIDER=postgresql
+      - POSTGRES_HOST=192.168.3.195
+      - POSTGRES_DATABASE=lubelogger
+      - POSTGRES_USER=lubelogger
+      - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD}
     volumes:
       - /File/Container/lubelogger/data:/App/Data
       - /File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
-    depends_on:
-      - postgres
     networks:
-      - aijias-public
-      - aijias-internal
+      - home-public
+    labels:
+      - "traefik.enable=false"
+
+  # ==================== 经期与健康预测（自建） ====================
+  period-predictor:
+    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
+    container_name: period-predictor
+    restart: unless-stopped
+    profiles:
+      - health
+    ports:
+      - "5000:5000"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /File/Container/period-predictor/models:/models
+      - /File/Container/period-predictor/rules:/rules:ro
+    networks:
+      - home-public
     labels:
       - "traefik.enable=false"
 
 networks:
-  aijias-public:
-    external: true
-
-  aijias-internal:
+  home-public:
     external: true

@@ -1,0 +1,96 @@
+# ============================================================
+# AiJiaS Fun — 娱乐服务（AI 可偶尔访问，非核心业务）
+# SillyTavern: AI 聊天前端  |  Navidrome: 音乐服务器
+# go-music-dl / go-novel-dl: 下载工具
+# ============================================================
+
+services:
+  sillytavern:
+    image: sillytavern:latest
+    container_name: sillytavern
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /File/Container/sillytavern/config:/home/node/app/config
+      - /File/Container/sillytavern/data:/home/node/app/data
+      - /File/Container/sillytavern/plugins:/home/node/app/plugins
+      - /File/Container/sillytavern/extensions:/home/node/app/public/extensions
+    networks:
+      - home-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sillytavern.rule=Host(`chat.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.sillytavern.entrypoints=websecure"
+      - "traefik.http.routers.sillytavern.tls=true"
+      - "traefik.http.services.sillytavern.loadbalancer.server.port=8000"
+
+  go-music-dl:
+    image: guohuiyuan/go-music-dl:latest
+    container_name: go-music-dl
+    restart: unless-stopped
+    command:
+      - "./music-dl"
+      - "web"
+      - "--port=8080"
+      - "--no-browser"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /Media/Container/go-music-dl/music:/app/downloads
+      - /File/Container/go-music-dl/config:/app/config
+    networks:
+      - home-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.musicdl.rule=Host(`musicdl.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.musicdl.entrypoints=websecure"
+      - "traefik.http.routers.musicdl.tls=true"
+      - "traefik.http.services.musicdl.loadbalancer.server.port=8080"
+
+  go-novel-dl:
+    image: guohuiyuan/go-novel-dl:latest
+    container_name: go-novel-dl
+    restart: unless-stopped
+    command:
+      - "./novel-dl"
+      - "web"
+      - "--port=8080"
+      - "--no-browser"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /Media/Container/go-novel-dl/novels:/app/downloads
+      - /File/Container/go-novel-dl/config:/app/config
+    networks:
+      - home-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.noveldl.rule=Host(`novel.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.noveldl.entrypoints=websecure"
+      - "traefik.http.routers.noveldl.tls=true"
+      - "traefik.http.services.noveldl.loadbalancer.server.port=8080"
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+    volumes:
+      - /Media/Container/navidrome/data:/data
+      - /Media/Container/go-music-dl/music:/music:ro
+    networks:
+      - home-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.music.rule=Host(`music.${DOMAIN_EXTERNAL}`)"
+      - "traefik.http.routers.music.entrypoints=websecure"
+      - "traefik.http.routers.music.tls=true"
+      - "traefik.http.services.music.loadbalancer.server.port=4533"
+
+networks:
+  home-public:
+    external: true

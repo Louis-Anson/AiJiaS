@@ -1,0 +1,35 @@
+# ============================================================
+# LiteLLM — 全屋大模型 API 路由
+# 独立项目，为所有内网服务提供统一模型入口
+# 客户端通过 http://192.168.3.195:4000 访问
+# ============================================================
+
+services:
+  litellm:
+    image: docker.litellm.ai/berriai/litellm:main-stable
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      - TZ=Asia/Shanghai
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - LITELLM_SALT_KEY=${LITELLM_SALT_KEY}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:***@192.168.3.195:5432/${POSTGRES_DB}
+      - REDIS_HOST=192.168.3.195
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=***      # --- API Keys ---
+      - DEEPSEEK_API_KEY=${DEEPSE...Y}
+      - OPENAI_API_KEY=${OPEN...Y}
+      - OPENAI_API_BASE=${OP...E}
+      - KIMI_API_KEY=***      - ZHIPU_API_KEY=${ZHIP...Y}
+      - OPENROUTER_API_KEY=${OPEN...Y}
+      - MIMO_API_KEY=${MIMO_API_KEY}
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

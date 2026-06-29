@@ -2,43 +2,38 @@
 # AiJiaS — .gitignore
 # ============================================================
 
-# Secrets — NEVER commit
+# Secrets
 .env
-docker-compose/.env
-home-assistant/secrets.yaml
 *.pem
 *.key
 acme.json
+home-assistant/secrets.yaml
 
-# IDE & Editor
+# Per-project env files
+app/docker-compose/.env
+database/.env
+traefik/.env
+litellm/.env
+immich/.env
+
+# IDE
 .vscode/
 .idea/
 *.swp
-*.swo
 *~
 .DS_Store
 Thumbs.db
-desktop.ini
-
-# Docker runtime (if any end up in repo)
-docker-compose/letsencrypt/
-/share/
 
 # Python
 __pycache__/
 *.pyc
-*.pyo
-*.egg-info/
 dist/
 build/
 
 # Node
 node_modules/
 
-# Backup & temp
+# Backup
 *.bak
 *.tmp
 *.log
-
-# OS
-.directory

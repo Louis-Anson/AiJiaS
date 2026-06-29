@@ -1,0 +1,20 @@
+# Traefik 动态路由 — Hermes + Next Terminal
+# 复制到 /File/Container/traefik/dynamic/
+
+http:
+  routers:
+    hermes:
+      rule: "Host(`hermes.relax.mycloudnas.com`)"
+      entrypoints: websecure
+      tls: true
+      service: hermes-agent
+
+    hermes-ui:
+      rule: "Host(`hermes-ui.relax.local`)"
+      entrypoints: websecure
+      tls: true
+      service: hermes-dashboard
+
+      loadBalancer:
+        servers:
+          - url: "http://192.168.3.195:8088"

@@ -1,0 +1,14 @@
+# Next Terminal — 内网跳板机 Web SSH
+http:
+  routers:
+    terminal:
+      rule: "Host(`terminal.relax.mycloudnas.com`)"
+      entrypoints: websecure
+      tls: true
+      service: next-terminal
+
+  services:
+    next-terminal:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.3.195:8088"
