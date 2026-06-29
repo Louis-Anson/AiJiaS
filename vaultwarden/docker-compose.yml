@@ -1,3 +1,4 @@
+services:
   vaultwarden:
     image: vaultwarden/server:latest
     restart: unless-stopped
@@ -5,7 +6,8 @@
       - TZ=Asia/Shanghai
       - SIGNUPS_ALLOWED=${VAULT_SIGNUPS_ALLOWED}
       - SIGNUPS_VERIFY=false
-      - ADMIN_TOKEN=***      - DOMAIN=https://vault.${DOMAIN_EXTERNAL}
+      - ADMIN_TOKEN=${VAULT_ADMIN_TOKEN}
+      - DOMAIN=https://vault.${DOMAIN_EXTERNAL}
       - DISABLE_ICON_DOWNLOAD=false
     volumes:
       - /share/Container/vaultwarden/data:/data
@@ -17,7 +19,6 @@
       - "traefik.http.routers.vault.entrypoints=websecure"
       - "traefik.http.routers.vault.tls=true"
       - "traefik.http.services.vault.loadbalancer.server.port=80"
-
 
 networks:
   home-public:
