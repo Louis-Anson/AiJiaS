@@ -27,7 +27,7 @@ services:
       - OPENROUTER_API_KEY=${OPEN...Y}
       - MIMO_API_KEY=${MIMO_API_KEY}
     volumes:
-      - ./config.yaml:/app/config.yaml
+      - /File/project/AiJiaS/litellm/config.yaml:/app/config.yaml
     logging:
       driver: "json-file"
       options:

@@ -1,0 +1,14 @@
+# Next Terminal — 内网跳板机 / Web SSH
+# 使用主机网络，连接主 PostgreSQL，Traefik 通过 terminal.relax.mycloudnas.com 路由
+
+services:
+  next-terminal:
+    image: dushixiang/next-terminal:latest
+    container_name: next-terminal
+    restart: always
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /File/Container/next-terminal/data:/usr/local/next-terminal/data
+      - /File/Container/next-terminal/logs:/usr/local/next-terminal/logs
+      - /File/project/AiJiaS/next-terminal/config.yaml:/etc/next-terminal/config.yaml

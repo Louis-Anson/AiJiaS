@@ -66,6 +66,18 @@ END $$;
 SELECT 'CREATE DATABASE homeassistant OWNER homeassistant'
  WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'homeassistant')\gexec
 GRANT ALL PRIVILEGES ON DATABASE homeassistant TO homeassistant;
+-- Next Terminal — 跳板机
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'next-terminal') THEN
+    CREATE ROLE "next-terminal" LOGIN PASSWORD 'change-me-nt';
+  ELSE
+    ALTER ROLE "next-terminal" WITH LOGIN PASSWORD 'change-me-nt';
+  END IF;
+END $$;
+SELECT 'CREATE DATABASE "next-terminal" OWNER "next-terminal"'
+ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'next-terminal')gexec
+GRANT ALL PRIVILEGES ON DATABASE "next-terminal" TO "next-terminal";
 
 -- ==== 2. 授予 public schema 权限（PG15+ 必须，否则建表失败） ====
 \c firefly
@@ -84,4 +96,4 @@ GRANT ALL ON SCHEMA public TO litellm;
 GRANT ALL ON SCHEMA public TO homeassistant;
 
 -- ==== 3. 验证 ====
-SELECT datname, datdba::regrole FROM pg_database WHERE datname IN ('firefly','mealie','lubelogger','litellm','homeassistant');
+SELECT datname, datdba::regrole FROM pg_database WHERE datname IN ('firefly','mealie','lubelogger','litellm','homeassistant','next-terminal');

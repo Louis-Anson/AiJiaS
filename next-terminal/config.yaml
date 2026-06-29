@@ -1,0 +1,30 @@
+# Next Terminal — 数据库连接
+# 通过主机 IP 连接 AiJiaS 的 PostgreSQL
+
+Database:
+  Enabled: true
+  Type: postgres
+  Postgres:
+    Hostname: 192.168.3.195
+    Port: 5432
+    Username: next-terminal
+    Password: your_n...n
+# SSH Server — 绑定内网 IP 的 2022 端口
+Server:
+  Addr: "192.168.3.195:8088"
+
+App:
+  Website:
+    AccessLog: "./logs/access.log"
+  Recording:
+    Type: "local"
+    Path: "/usr/local/next-terminal/data/recordings"
+  Guacd:
+    Drive: "/usr/local/next-terminal/data/drive"
+    Hosts:                          # 不用 RDP/VNC，可以删掉或留空
+  ReverseProxy:
+    Enabled: false                  # Traefik 已经处理了，关掉内置的
+    SelfProxyEnabled: false
+    HttpEnabled: false
+    HttpsEnabled: false
+    IpExtractor: "x-forwarded-for"  # 从 Traefik 获取真实客户端 IP
