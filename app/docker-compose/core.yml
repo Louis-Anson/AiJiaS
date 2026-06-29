@@ -7,7 +7,6 @@ services:
   # ==================== 家务任务 ====================
   donetick:
     image: donetick:beta
-    container_name: donetick
     restart: unless-stopped
     ports:
       - "2021:2021"
@@ -26,7 +25,6 @@ services:
   # ==================== 菜谱与食材 ====================
   mealie:
     image: ghcr.io/mealie-recipes/mealie:latest
-    container_name: mealie
     restart: unless-stopped
     ports:
       - "9000:9000"
@@ -49,7 +47,6 @@ services:
   # ==================== 物品管理 ====================
   homebox:
     image: sysadminsmedia/homebox:latest
-    container_name: homebox
     restart: unless-stopped
     ports:
       - "7745:7745"
@@ -69,7 +66,6 @@ services:
   # ==================== 家庭记账 ====================
   firefly:
     image: fireflyiii/core:latest
-    container_name: firefly
     restart: unless-stopped
     ports:
       - "8088:8080"
@@ -93,7 +89,6 @@ services:
   # ==================== 车辆保养 ====================
   lubelogger:
     image: hargata/lubelogger:latest
-    container_name: lubelogger
     restart: unless-stopped
     ports:
       - "8089:8080"
@@ -115,7 +110,6 @@ services:
   # ==================== 经期与健康预测（自建） ====================
   period-predictor:
     image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
-    container_name: period-predictor
     restart: unless-stopped
     profiles:
       - health

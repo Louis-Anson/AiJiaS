@@ -7,7 +7,6 @@
 services:
   sillytavern:
     image: sillytavern:latest
-    container_name: sillytavern
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
@@ -27,7 +26,6 @@ services:
 
   go-music-dl:
     image: guohuiyuan/go-music-dl:latest
-    container_name: go-music-dl
     restart: unless-stopped
     command:
       - "./music-dl"
@@ -50,7 +48,6 @@ services:
 
   go-novel-dl:
     image: guohuiyuan/go-novel-dl:latest
-    container_name: go-novel-dl
     restart: unless-stopped
     command:
       - "./novel-dl"
@@ -73,7 +70,6 @@ services:
 
   navidrome:
     image: deluan/navidrome:latest
-    container_name: navidrome
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
