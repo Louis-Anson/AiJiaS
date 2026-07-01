@@ -25,4 +25,4 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /share/File/Container/next-terminal/data:/usr/local/next-terminal/data
       - /share/File/Container/next-terminal/logs:/usr/local/next-terminal/logs
-      - /share/File/Container/project/AiJiaS/next-terminal/config.yaml:/etc/next-terminal/config.yaml
+      - /share/File/Container/next-terminal/next-terminal/config.yaml:/etc/next-terminal/config.yaml
