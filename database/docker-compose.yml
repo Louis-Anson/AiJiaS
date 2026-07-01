@@ -30,7 +30,7 @@ services:
       -c maintenance_work_mem=64MB
     volumes:
       - /share/Container/postgres/data:/var/lib/postgresql/data
-      - /share/File/Container/project/AiJiaS/database/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+      - /share/File/project/AiJiaS/database/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s

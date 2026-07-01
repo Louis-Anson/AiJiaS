@@ -13,7 +13,7 @@ for svc in firefly mealie lubelogger litellm homeassistant next-terminal; do
   [ "$svc" = "next-terminal" ] && db='"'"next-terminal"'"' && role='"'"next-terminal"'"'
   
   echo "[init] provisioning $svc..."
-  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -c "
+  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d postgres -c "
     DO \$\$
     BEGIN
       IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$role') THEN
@@ -23,7 +23,7 @@ for svc in firefly mealie lubelogger litellm homeassistant next-terminal; do
       END IF;
     END \$\$;
   "
-  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -c "CREATE DATABASE $db OWNER $role" 2>/dev/null || true
+  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d postgres -c "CREATE DATABASE $db OWNER $role" 2>/dev/null || true
   psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d "$db" -c "GRANT ALL ON SCHEMA public TO $role" 2>/dev/null || true
 done
 
