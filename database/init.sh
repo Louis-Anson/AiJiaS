@@ -12,7 +12,7 @@ PSQL_USER="${POSTGRES_USER:-admin}"
 echo "[init] 使用用户 $PSQL_USER 连接 PostgreSQL..."
 
 # Run psql with variable substitution
-docker exec -i postgres psql -U "$PSQL_USER" -v firefly_pw="$FIREFLY_DB_PASSWORD" -v mealie_pw="$MEALIE_DB_PASSWORD" -v lubelogger_pw="$LUBELOGGER_DB_PASSWORD" -v litellm_pw="$LITELLM_DB_PASSWORD" -v ha_pw="$HA_DB_PASSWORD" -v nt_pw="$NEXT_TERMINAL_DB_PASSWORD" << 'SQL'
+docker exec -i postgres psql -U "$PSQL_USER" -d postgres -v firefly_pw="$FIREFLY_DB_PASSWORD" -v mealie_pw="$MEALIE_DB_PASSWORD" -v lubelogger_pw="$LUBELOGGER_DB_PASSWORD" -v litellm_pw="$LITELLM_DB_PASSWORD" -v ha_pw="$HA_DB_PASSWORD" -v nt_pw="$NEXT_TERMINAL_DB_PASSWORD" << 'SQL'
 -- ===== firefly =====
 DO $$
 BEGIN

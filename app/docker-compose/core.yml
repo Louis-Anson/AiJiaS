@@ -16,7 +16,7 @@ services:
       - DT_SQLITE_PATH=/donetick-data/donetick.db
       - DT_JWT_SECRET=${DT_JWT_SECRET}
     volumes:
-      - /File/Container/donetick/data:/donetick-data
+      - /share/File/Container/donetick/data:/donetick-data
     networks:
       - home-public
     labels:
@@ -38,7 +38,7 @@ services:
       - POSTGRES_PASSWORD=${MEALIE_DB_PASSWORD}
       - POSTGRES_DB=mealie
     volumes:
-      - /File/Container/mealie/data:/app/data
+      - /share/File/Container/mealie/data:/app/data
     networks:
       - home-public
     labels:
@@ -56,7 +56,7 @@ services:
       - HBOX_ALLOW_REGISTRATION=false
       - HBOX_AUTH_API_KEY_PEPPER=${HBOX_AUTH_API_KEY_PEPPER}
     volumes:
-      - /File/Container/homebox/data:/data
+      - /share/File/Container/homebox/data:/data
       - /etc/localtime:/etc/localtime:ro
     networks:
       - home-public
@@ -80,7 +80,7 @@ services:
       - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
       - APP_URL=http://firefly:8080
     volumes:
-      - /File/Container/firefly/data:/var/www/html/storage/upload
+      - /share/File/Container/firefly/data:/var/www/html/storage/upload
     networks:
       - home-public
     labels:
@@ -100,8 +100,8 @@ services:
       - POSTGRES_USER=lubelogger
       - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD}
     volumes:
-      - /File/Container/lubelogger/data:/App/Data
-      - /File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
+      - /share/File/Container/lubelogger/data:/App/Data
+      - /share/File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
     networks:
       - home-public
     labels:
@@ -118,8 +118,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /File/Container/period-predictor/models:/models
-      - /File/Container/period-predictor/rules:/rules:ro
+      - /share/File/Container/period-predictor/models:/models
+      - /share/File/Container/period-predictor/rules:/rules:ro
     networks:
       - home-public
     labels:

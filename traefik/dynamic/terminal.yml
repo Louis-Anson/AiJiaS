@@ -2,7 +2,7 @@
 http:
   routers:
     terminal:
-      rule: "Host(`terminal.relax.mycloudnas.com`)"
+      rule: "Host(`terminal.aijias.xyz`)"
       entrypoints: websecure
       tls: true
       service: next-terminal

@@ -1,16 +1,16 @@
 # Traefik 动态路由 — Hermes + Next Terminal
-# 复制到 /File/Container/traefik/dynamic/
+# 复制到 /share/File/Container/traefik/dynamic/
 
 http:
   routers:
     hermes:
-      rule: "Host(`hermes.relax.mycloudnas.com`)"
+      rule: "Host(`hermes.aijias.xyz`)"
       entrypoints: websecure
       tls: true
       service: hermes-agent
 
     hermes-ui:
-      rule: "Host(`hermes-ui.relax.local`)"
+      rule: "Host(`hermes-ui.aijias.local`)"
       entrypoints: websecure
       tls: true
       service: hermes-dashboard

@@ -13,8 +13,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /File/Container/ntfy/cache:/var/cache/ntfy
-      - /File/Container/ntfy/etc:/etc/ntfy
+      - /share/File/Container/ntfy/cache:/var/cache/ntfy
+      - /share/File/Container/ntfy/etc:/etc/ntfy
     networks:
       - home-public
     labels:

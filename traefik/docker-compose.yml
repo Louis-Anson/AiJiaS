@@ -1,7 +1,6 @@
 # ============================================================
 # Traefik — 全屋反向代理
-# 独立项目，为所有内网服务提供 HTTPS 入口
-# 网络：home-public（所有需要路由的服务加入此网络）
+# Let's Encrypt 通过阿里云 DNS Challenge 自动签发 + 续期
 # ============================================================
 
 services:
@@ -11,6 +10,8 @@ services:
     restart: unless-stopped
     environment:
       - HERMES_IP=${HERMES_IP}
+      - ALIBABA_ACCESS_KEY_ID=${ALIBABA_ACCESS_KEY_ID}
+      - ALIBABA_ACCESS_KEY_SECRET=${ALIBABA_ACCESS_KEY_SECRET}
     command:
       - "--api.dashboard=true"
       - "--api.insecure=true"
@@ -23,14 +24,15 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "--entrypoints.websecure.http.tls.certresolver=letsencrypt"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=alidns"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/stunnel:/certs:ro
-      - /File/Container/traefik/dynamic:/etc/traefik/dynamic
+      - /share/File/Container/traefik/dynamic:/etc/traefik/dynamic
+      - /share/Container/traefik/letsencrypt:/letsencrypt
     networks:
       - home-public
 
@@ -46,11 +48,10 @@ services:
       - TZ=Asia/Shanghai
       - ADMIN_USER=louis
       - ADMIN_PASSWORD_HASH=${TRAEFIK_MANAGER_PASSWORD_HASH}
-    ports:
-      - "8081:8081"
     volumes:
-      - /File/Container/traefik/dynamic:/config
-      - /File/Container/traefik/manager-db:/data
+      - /share/File/Container/traefik/dynamic:/config
+      - /share/File/Container/traefik/manager-db:/data
+      - /share/File/Container/traefik/manager-config:/app/config
     networks:
       - home-public
 

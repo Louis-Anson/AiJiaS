@@ -11,10 +11,10 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /File/Container/sillytavern/config:/home/node/app/config
-      - /File/Container/sillytavern/data:/home/node/app/data
-      - /File/Container/sillytavern/plugins:/home/node/app/plugins
-      - /File/Container/sillytavern/extensions:/home/node/app/public/extensions
+      - /share/File/Container/sillytavern/config:/home/node/app/config
+      - /share/File/Container/sillytavern/data:/home/node/app/data
+      - /share/File/Container/sillytavern/plugins:/home/node/app/plugins
+      - /share/File/Container/sillytavern/extensions:/home/node/app/public/extensions
     networks:
       - home-public
     labels:
@@ -35,8 +35,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /Media/Container/go-music-dl/music:/app/downloads
-      - /File/Container/go-music-dl/config:/app/config
+      - /share/Media/Container/go-music-dl/music:/app/downloads
+      - /share/File/Container/go-music-dl/config:/app/config
     networks:
       - home-public
     labels:
@@ -57,8 +57,8 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - /Media/Container/go-novel-dl/novels:/app/downloads
-      - /File/Container/go-novel-dl/config:/app/config
+      - /share/Media/Container/go-novel-dl/novels:/app/downloads
+      - /share/File/Container/go-novel-dl/config:/app/config
     networks:
       - home-public
     labels:
@@ -76,8 +76,8 @@ services:
       - ND_SCANSCHEDULE=1h
       - ND_LOGLEVEL=info
     volumes:
-      - /Media/Container/navidrome/data:/data
-      - /Media/Container/go-music-dl/music:/music:ro
+      - /share/Media/Container/navidrome/data:/data
+      - /share/Media/Container/go-music-dl/music:/music:ro
     networks:
       - home-public
     labels:

@@ -2,7 +2,7 @@
 http:
   routers:
     dns:
-      rule: "Host(`dns.relax.mycloudnas.com`)"
+      rule: "Host(`dns.aijias.xyz`)"
       entrypoints: websecure
       tls: true
       service: adguard
