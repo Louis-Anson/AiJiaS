@@ -18,7 +18,7 @@ log:
   Filename: ./logs/nt.log
 
 Server:
-  Addr: "0.0.0.0:8088"
+  Addr: "0.0.0.0:8086"
 
 App:
   Website:

@@ -11,4 +11,4 @@ http:
     next-terminal:
       loadBalancer:
         servers:
-          - url: "http://192.168.3.195:8088"
+          - url: "http://192.168.3.195:8086"

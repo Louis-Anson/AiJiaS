@@ -1,6 +1,4 @@
-# Traefik 动态路由 — Hermes + Next Terminal
-# 复制到 /share/File/Container/traefik/dynamic/
-
+# Traefik 路由 — Hermes Agent（LXD 容器）
 http:
   routers:
     hermes:
@@ -15,6 +13,13 @@ http:
       tls: true
       service: hermes-dashboard
 
+  services:
+    hermes-agent:
       loadBalancer:
         servers:
-          - url: "http://192.168.3.195:8088"
+          - url: "http://{{ env "HERMES_IP" }}:3000"
+
+    hermes-dashboard:
+      loadBalancer:
+        servers:
+          - url: "http://{{ env "HERMES_IP" }}:9119"
