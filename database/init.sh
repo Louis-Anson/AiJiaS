@@ -4,27 +4,31 @@
 set -euo pipefail
 echo "[init] PostgreSQL init start..."
 
-for svc in firefly mealie lubelogger litellm homeassistant next-terminal; do
-  pw_var="${svc^^}_DB_PASSWORD"
-  [ "$svc" = "next-terminal" ] && pw_var="NEXT_TERMINAL_DB_PASSWORD"
-  pw="${!pw_var}"
-  db="$svc"
-  role="$svc"
-  [ "$svc" = "next-terminal" ] && db='"'"next-terminal"'"' && role='"'"next-terminal"'"'
-  
+provision() {
+  local svc=$1 pw_var=$2
+  local pw="${!pw_var}"
+  local db="$svc" role="$svc"
+
   echo "[init] provisioning $svc..."
-  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d postgres -c "
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d postgres -c "
     DO \$\$
     BEGIN
       IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$role') THEN
-        CREATE ROLE $role LOGIN PASSWORD '$pw';
+        CREATE ROLE \"$role\" LOGIN PASSWORD '$pw';
       ELSE
-        ALTER ROLE $role WITH LOGIN PASSWORD '$pw';
+        ALTER ROLE \"$role\" WITH LOGIN PASSWORD '$pw';
       END IF;
     END \$\$;
   "
-  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d postgres -c "CREATE DATABASE $db OWNER $role" 2>/dev/null || true
-  psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -d "$db" -c "GRANT ALL ON SCHEMA public TO $role" 2>/dev/null || true
-done
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d postgres -c "CREATE DATABASE \"$db\" OWNER \"$role\"" 2>/dev/null || true
+  psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$db" -c "GRANT ALL ON SCHEMA public TO \"$role\"" 2>/dev/null || true
+}
+
+provision firefly    FIREFLY_DB_PASSWORD
+provision mealie     MEALIE_DB_PASSWORD
+provision lubelogger LUBELOGGER_DB_PASSWORD
+provision litellm    LITELLM_DB_PASSWORD
+provision homeassistant HOMEASSISTANT_DB_PASSWORD
+provision next-terminal NEXT_TERMINAL_DB_PASSWORD
 
 echo "[init] Done."
