@@ -15,12 +15,3 @@ services:
     volumes:
       - /share/File/Container/ntfy/cache:/var/cache/ntfy
       - /share/File/Container/ntfy/etc:/etc/ntfy
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
-
-
-networks:
-  home-public:
-    external: true

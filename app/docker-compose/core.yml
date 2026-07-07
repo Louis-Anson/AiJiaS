@@ -17,10 +17,6 @@ services:
       - DT_JWT_SECRET=${DT_JWT_SECRET}
     volumes:
       - /share/File/Container/donetick/data:/donetick-data
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
 
   # ==================== 菜谱与食材 ====================
   mealie:
@@ -39,10 +35,6 @@ services:
       - POSTGRES_DB=mealie
     volumes:
       - /share/File/Container/mealie/data:/app/data
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
 
   # ==================== 物品管理 ====================
   homebox:
@@ -57,11 +49,6 @@ services:
       - HBOX_AUTH_API_KEY_PEPPER=${HBOX_AUTH_API_KEY_PEPPER}
     volumes:
       - /share/File/Container/homebox/data:/data
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
 
   # ==================== 家庭记账 ====================
   firefly:
@@ -78,13 +65,8 @@ services:
       - DB_DATABASE=firefly
       - DB_USERNAME=firefly
       - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
-      - APP_URL=http://firefly:8080
     volumes:
       - /share/File/Container/firefly/data:/var/www/html/storage/upload
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
 
   # ==================== 车辆保养 ====================
   lubelogger:
@@ -98,18 +80,14 @@ services:
       - POSTGRES_HOST=192.168.3.195
       - POSTGRES_DATABASE=lubelogger
       - POSTGRES_USER=lubelogger
-      - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD}
-    volumes:
+      - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD
+  volumes:
       - /share/File/Container/lubelogger/data:/App/Data
       - /share/File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
 
   # ==================== 经期与健康预测（自建） ====================
   period-predictor:
-    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
+    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest
     restart: unless-stopped
     profiles:
       - health
@@ -120,11 +98,3 @@ services:
     volumes:
       - /share/File/Container/period-predictor/models:/models
       - /share/File/Container/period-predictor/rules:/rules:ro
-    networks:
-      - home-public
-    labels:
-      - "traefik.enable=false"
-
-networks:
-  home-public:
-    external: true

@@ -57,7 +57,6 @@ ai-models/
 | 不写入密钥 | API Key、Token、数据库密码只通过 `.env` 和运行时环境变量注入。 |
 | 非 root 用户运行 | 降低容器被突破后的破坏范围。 |
 | 固定基础镜像版本 | 避免 `latest` 在无感升级后引入不兼容变化。 |
-| 提供健康检查接口 | 服务至少提供 `/healthz`，便于 compose、Traefik 和脚本判断状态。 |
 | 日志输出到 stdout | 让 Docker、NAS 面板和后续日志分析可以统一收集。 |
 
 Node.js / TypeScript 服务可以参考：
@@ -66,20 +65,17 @@ Node.js / TypeScript 服务可以参考：
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
 
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
 
 FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 RUN addgroup -S aijias && adduser -S aijias -G aijias
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 USER aijias
 EXPOSE 8080
@@ -159,7 +155,6 @@ PERIOD_PREDICTOR_IMAGE=aijias/period-predictor:0.1.0
 
 ```powershell
 docker compose `
-  -f docker-compose/traefik.yml `
   -f docker-compose/core-service.yml `
   -f docker-compose/family-systems.yml `
   -f docker-compose/media.yml `
@@ -171,7 +166,6 @@ docker compose `
 
 ```powershell
 docker compose `
-  -f docker-compose/traefik.yml `
   -f docker-compose/core-service.yml `
   -f docker-compose/family-systems.yml `
   -f docker-compose/media.yml `
@@ -184,7 +178,6 @@ docker compose `
 
 ```powershell
 docker compose `
-  -f docker-compose/traefik.yml `
   -f docker-compose/core-service.yml `
   -f docker-compose/family-systems.yml `
   -f docker-compose/media.yml `

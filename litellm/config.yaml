@@ -128,7 +128,7 @@ model_list:
   # --- 免费兜底：OpenRouter Nemotron 3 Ultra（免费） ---
   - model_name: free_fallback
     litellm_params:
-      model: nvidia/nemotron-3-ultra-550b-a55b:free
+      model: openrouter/nemotron-3-ultra-550b-a55b:free
       api_key: os.environ/OPENROUTER_API_KEY
       api_base: https://openrouter.ai/api/v1
   # ==================== 独立可选模型（用户手动选择，非 Hermes 槽位） ====================
@@ -206,7 +206,7 @@ model_list:
   # --- OpenRouter 免费兜底 ---
   - model_name: nemotron-3-ultra
     litellm_params:
-      model: nvidia/nemotron-3-ultra-550b-a55b:free
+      model: openrouter/nemotron-3-ultra-550b-a55b:free
       api_key: os.environ/OPENROUTER_API_KEY
       api_base: https://openrouter.ai/api/v1
 # ============================================================

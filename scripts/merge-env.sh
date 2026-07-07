@@ -5,7 +5,6 @@
 
 set -euo pipefail
 BASE="${1:-/share/File/project/AiJiaS}"
-DIRS=("database" "traefik" "litellm" "immich" "next-terminal" "vaultwarden" "app/docker-compose")
 
 MISSING=0
 

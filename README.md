@@ -6,9 +6,6 @@
 > *"代码是冷的，但日子是热的。用一台 NAS，给老婆搭个隐形的家庭管家。"*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-Ready-blue)](https://www.home-assistant.io/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Privacy First](https://img.shields.io/badge/Privacy-Local%20Only-green)]()
 
 ## 🗺️ 整体设计图
 
@@ -101,14 +98,12 @@ AiJiaS/
 │ ├── architecture.md # 系统架构图（Mermaid）
 │ ├── requirements.md # 需求跟踪表
 │ ├── hybrid-deployment.md # HAOS虚拟机 + Docker混合部署总览
-│ ├── haos-npm-setup.md # HAOS 接入 Traefik 指南
 │ ├── agent-trial-plan.md # AI 管家选择记录（Hermes 为主线）
 │ ├── homebox-setup.md # Homebox 部署与集成指南
 │ └── changelog.md # 变更日志
 │
 ├── docker-compose/ # 🐳 服务编排
 │ ├── core-services.yml # 家庭 AI、模型入口、通知和数据底座
-│ ├── traefik.yml # Traefik + Traefik Manager
 │ ├── family-systems.yml # Donetick, Mealie, Firefly III, Homebox, LubeLogger
 │ ├── media.yml # Immich, Navidrome, Go Music DL, Go Novel DL
 │ ├── ai-models.yml # period-predictor
@@ -153,7 +148,6 @@ AiJiaS/
 
 ## 🚀 快速开始
 ```bash
-git clone https://github.com/你的用户名/AiJiaS.git
 cd AiJiaS
 ...
 
