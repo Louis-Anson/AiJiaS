@@ -31,7 +31,7 @@ services:
       - POSTGRES_SERVER=192.168.3.195
       - POSTGRES_PORT=5432
       - POSTGRES_USER=mealie
-      - POSTGR...D}
+      - POSTGRES_PASSWORD=${MEALIE_DB_PASSWORD}
       - POSTGRES_DB=mealie
     volumes:
       - /share/File/Container/mealie/data:/app/data
