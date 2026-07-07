@@ -81,13 +81,13 @@ services:
       - POSTGRES_DATABASE=lubelogger
       - POSTGRES_USER=lubelogger
       - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD}
-  volumes:
+    volumes:
       - /share/File/Container/lubelogger/data:/App/Data
       - /share/File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
 
   # ==================== 经期与健康预测（自建） ====================
   period-predictor:
-    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest
+    image: ${PERIOD_PREDICTOR_IMAGE:-aijias/period-predictor:latest}
     restart: unless-stopped
     profiles:
       - health
