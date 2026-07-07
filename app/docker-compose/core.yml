@@ -31,7 +31,7 @@ services:
       - POSTGRES_SERVER=192.168.3.195
       - POSTGRES_PORT=5432
       - POSTGRES_USER=mealie
-      - POSTGRES_PASSWORD=${MEALIE_DB_PASSWORD}
+      - POSTGR...D}
       - POSTGRES_DB=mealie
     volumes:
       - /share/File/Container/mealie/data:/app/data
@@ -80,7 +80,7 @@ services:
       - POSTGRES_HOST=192.168.3.195
       - POSTGRES_DATABASE=lubelogger
       - POSTGRES_USER=lubelogger
-      - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD
+      - POSTGRES_PASSWORD=${LUBELOGGER_DB_PASSWORD}
   volumes:
       - /share/File/Container/lubelogger/data:/App/Data
       - /share/File/Container/lubelogger/keys:/root/.aspnet/DataProtection-Keys
