@@ -31,7 +31,6 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:release
     container_name: immich-machine-learning
     restart: unless-stopped
-      - "2283:2283"
     volumes:
       - immich_model_cache:/cache
     networks:
