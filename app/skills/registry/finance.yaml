@@ -1,21 +1,22 @@
-# 家庭记账 — 通过 Firefly III 记录收支（复式记账）
-# Firefly API: POST /api/v1/transactions
-# 支出 = withdrawal，收入 = deposit，转账 = transfer
-# 金额、source 账户或分类低置信度时必须二次确认
+# 家庭记账 — 通过 ezBookkeeping 记录收支
+# ezBookkeeping MCP: add_transaction (按名称查找分类和账户，无需 ID)
+# API: POST /api/v1/transactions/add.json
+# 交易类型: expense=支出, income=收入, transfer=转账
+# 金额、分类或账户低置信度时必须二次确认
 id: finance.create_transaction
 name: 家庭记账
-service: firefly
+service: ezbookkeeping
 action: create_transaction
+mcp_tool: add_transaction
 description: 记录家庭收支，支持支出/收入/转账，自动关联账户和分类
 risk: medium
 input:
-  type: "enum[withdrawal, deposit, transfer]*"
+  type: "enum[expense, income, transfer]*"
   amount: "number*"
   description: "string*"
   date: "date [today]"
   category_name: string
-  source_name: string
-  destination_name: string
+  account_name: string
   notes: string
 confirm: 涉及账本写入；金额、分类或账户不明确时必须确认
 redlines:

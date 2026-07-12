@@ -51,6 +51,8 @@ services:
       - /share/File/Container/homebox/data:/data
 
   # ==================== 家庭记账 ====================
+  # 并行阶段: Firefly (8088) + ezBookkeeping (7070) 同时运行
+  # 迁移验证后: 注释掉 firefly 段，取消 ezbookkeeping 端口 8088 注释
   firefly:
     image: fireflyiii/core:latest
     restart: unless-stopped
@@ -67,6 +69,27 @@ services:
       - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
     volumes:
       - /share/File/Container/firefly/data:/var/www/html/storage/upload
+
+  ezbookkeeping:
+    image: mayswind/ezbookkeeping:latest
+    restart: unless-stopped
+    ports:
+      - "7070:8080"           # 阶段1: 并行运行用 7070
+      # - "8088:8080"         # 阶段2: 替换 Firefly 后改用 8088
+    environment:
+      - TZ=Asia/Shanghai
+      - EBK_SERVER_ENABLE_GZIP=true
+      - EBK_DATABASE_TYPE=postgres
+      - EBK_DATABASE_HOST=192.168.3.195
+      - EBK_DATABASE_PORT=5432
+      - EBK_DATABASE_NAME=ezbookkeeping
+      - EBK_DATABASE_USER=ezbookkeeping
+      - EBK_DATABASE_PASSWD=${EZBOOKKEEPING_DB_PASSWORD}
+      - EBK_SECURITY_SECRET_KEY=${EZBOOKKEEPING_SECRET_KEY}
+      - EBK_USER_ENABLE_REGISTER=false
+      - EBK_MCP_ENABLE_MCP=true
+    volumes:
+      - /share/File/Container/ezbookkeeping/data:/ezbookkeeping/data
 
   # ==================== 车辆保养 ====================
   lubelogger:

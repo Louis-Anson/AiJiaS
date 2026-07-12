@@ -24,8 +24,9 @@ provision() {
   psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$db" -c "GRANT ALL ON SCHEMA public TO \"$role\"" 2>/dev/null || true
 }
 
-provision firefly    FIREFLY_DB_PASSWORD
-provision mealie     MEALIE_DB_PASSWORD
+provision firefly       FIREFLY_DB_PASSWORD
+provision ezbookkeeping EZBOOKKEEPING_DB_PASSWORD
+provision mealie        MEALIE_DB_PASSWORD
 provision lubelogger LUBELOGGER_DB_PASSWORD
 provision litellm    LITELLM_DB_PASSWORD
 provision homeassistant HOMEASSISTANT_DB_PASSWORD
